@@ -1,2 +1,2 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Games/Dev/Monogame/Learninging/Test/Content/Textures/ball.png","C:/Games/Dev/Monogame/Learninging/Test/Content/bin/DesktopGL/Content/Textures/ball.xnb","TextureProcessor","Texture2DContent",22004,16469,0.0824401
+"C:/Games/Dev/Monogame/RubedoTest/Content/Textures/ball.png","C:/Games/Dev/Monogame/RubedoTest/Content/bin/DesktopGL/Content/Textures/ball.xnb","TextureProcessor","Texture2DContent",22004,16469,0.0849114

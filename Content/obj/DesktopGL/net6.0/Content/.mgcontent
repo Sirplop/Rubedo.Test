@@ -4,7 +4,7 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Games/Dev/Monogame/Learninging/Test/Content/Textures/ball.png</File>
+    <File>C:/Games/Dev/Monogame/RubedoTest/Content/Textures/ball.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
