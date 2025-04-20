@@ -202,7 +202,7 @@ internal class DemoState : GameState
                     break;
             }
             if (showVelocity)
-                shapes.DrawLine(body.transform.Position, body.transform.Position + body.LinearVelocity, Color.Aquamarine);
+                shapes.DrawLine(body.compTransform.Position, body.compTransform.Position + body.LinearVelocity, Color.Aquamarine);
         }
 
         //foreach (Entity ent in Entities)

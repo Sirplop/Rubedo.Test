@@ -14,11 +14,6 @@ public class DemoGame : Rubedo.RubedoEngine
 {
     public DemoGame() : base() { }
 
-    protected override void Initialize()
-    {
-        base.Initialize();
-    }
-
     protected override void LoadContent()
     {
         base.LoadContent();
