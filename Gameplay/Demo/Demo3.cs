@@ -67,8 +67,8 @@ internal class Demo3 : DemoBase
     private bool shapeSet = true;
     public override void HandleInput(DemoState state)
     {
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse1) ||
-            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Mouse1)))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Left) ||
+            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Left)))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
             float x = Random.Range(0.5f, 2f);
@@ -78,8 +78,8 @@ internal class Demo3 : DemoBase
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse2) ||
-            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Mouse2)))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Right) ||
+            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Right)))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             float x = Random.Range(0.5f, 2f);
@@ -89,7 +89,7 @@ internal class Demo3 : DemoBase
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse3))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }

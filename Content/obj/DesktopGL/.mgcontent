@@ -4,9 +4,13 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Games/Dev/Monogame/Learninging/Learninging/Content/Textures/ball.png</File>
+    <File>C:/Games/Dev/Monogame/RubedoTest/Content/Textures/ball.png</File>
+    <File>C:/Games/Dev/Monogame/RubedoTest/Content/Textures/button_circle.png</File>
+    <File>C:/Games/Dev/Monogame/RubedoTest/Content/Textures/button_wonky.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>

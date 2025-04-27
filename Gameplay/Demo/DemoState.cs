@@ -9,7 +9,8 @@ using Rubedo.Physics2D;
 using Rubedo.Physics2D.Collision.Shapes;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Math;
-using Rubedo.Render;
+using Rubedo.Rendering;
+using Rubedo.UI;
 using System;
 using System.Collections.Generic;
 
@@ -25,6 +26,8 @@ internal class DemoState : GameState
     public static bool showAABB = false;
     public static bool fastPlace = false;
 
+    public bool drawDebug = true;
+
     private Shapes shapes;
 
     private DemoBase[] demos = new DemoBase[]
@@ -32,7 +35,8 @@ internal class DemoState : GameState
         new Demo1(),
         new Demo2(),
         new Demo3(),
-        new Demo4()
+        new Demo4(),
+        new Demo5()
     };
 
     private int selectedDemo = 0;
@@ -85,23 +89,32 @@ internal class DemoState : GameState
 
         if (inputManager.KeyPressed(Keys.Left))
         {
+            Reset();
             if (selectedDemo == 0)
                 selectedDemo = demos.Length - 1;
             else
                 selectedDemo--;
-            RubedoEngine.Instance.World.Clear();
-            foreach (Entity ent in Entities)
-                Entities.Remove(ent);
             demos[selectedDemo].Initialize(this);
         }
         if (inputManager.KeyPressed(Keys.Right))
         {
+            Reset();
             selectedDemo = (selectedDemo + 1) % demos.Length;
-            RubedoEngine.Instance.World.Clear();
-            foreach (Entity ent in Entities)
-                Entities.Remove(ent);
             demos[selectedDemo].Initialize(this);
         }
+    }
+
+    private void Reset()
+    {
+        drawDebug = true;
+        RubedoEngine.SizeOfMeter = 1;
+        RubedoEngine.Instance.World.ResetGravity();
+        RubedoEngine.Instance.Camera.SetZoom(24);
+        RubedoEngine.Instance.World.Clear();
+        foreach (Entity ent in Entities)
+            Entities.Remove(ent);
+
+        GUI.Root.Clear();
     }
 
     public PhysicsBody MakeBody(Entity entity, PhysicsMaterial material, Collider collider, bool isStatic)
@@ -148,6 +161,13 @@ internal class DemoState : GameState
 
     public override void Draw(Renderer sb)
     {
+        Vector2 mouse = RubedoEngine.Input.MouseWorldPosition();
+        Vector2 mouseScreen = RubedoEngine.Instance.Camera.WorldToScreenPoint(mouse);//RubedoEngine.Input.MouseScreenPosition();
+        DebugText.Instance.DrawText(mouse, 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouse.ToNiceString(), false);
+        DebugText.Instance.DrawText(mouse - new Vector2(0, 30 / RubedoEngine.Instance.Camera.GetZoom()), 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouseScreen.ToNiceString(), false);
+
+        base.Draw(sb);
+
         shapes.Begin(RubedoEngine.Instance.Camera);
 
         for (int i = 0; i < RubedoEngine.Instance.World.bodies.Count; i++)
@@ -209,12 +229,18 @@ internal class DemoState : GameState
         //    shapes.DrawBox(ent.transform, 0.25f, 0.25f, Color.Yellow);
 
         RubedoEngine.Instance.World.DebugDraw(shapes);
-        shapes.End();
 
+        RubedoEngine.Instance.Camera.GetExtents(out Vector2 min, out _);
+        shapes.DrawLine(mouse, new Vector2(mouse.X, min.Y), Color.DarkRed);
+        shapes.DrawLine(mouse, new Vector2(min.X, mouse.Y), Color.DarkRed);
+
+        shapes.End();
+        if (!drawDebug)
+            return;
         //draw text
         DebugText debugText = DebugText.Instance;
         debugText.DrawTextStack($"Bodies: {RubedoEngine.Instance.World.bodies.Count} " +
-            $"| Physics time: {RubedoEngine.Instance.physicsWatch.Elapsed.TotalMilliseconds.ToString("0.00")}");
+            $"| Physics time: {RubedoEngine.Instance._physicsTimer.GetAsString("")}");
         debugText.DrawTextStack($"Selected Demo: {demos[selectedDemo].description}");
         debugText.DrawTextStack($"Demo {selectedDemo + 1} of {demos.Length}");
         debugText.DrawTextStack($"(C)olor velocity: {(colorVelocity ? "Yes" : "No")}");

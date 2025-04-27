@@ -4,8 +4,6 @@ using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D;
 using Microsoft.Xna.Framework;
 using Rubedo.Physics2D.Collision.Shapes;
-using Rubedo.Render;
-using System.Diagnostics.Metrics;
 
 namespace Test.Gameplay.Demo;
 
@@ -62,7 +60,7 @@ internal class Demo2 : DemoBase
     private bool shapeSet = true;
     public override void HandleInput(DemoState state)
     {
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse1))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
 
@@ -72,7 +70,7 @@ internal class Demo2 : DemoBase
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse2))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Right))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             //Polygon polygon = new Polygon(0.5f, 0.5f);
@@ -81,7 +79,7 @@ internal class Demo2 : DemoBase
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Mouse3))
+        if (state.inputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }

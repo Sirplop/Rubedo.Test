@@ -177,7 +177,7 @@ public class TestState : GameState
     public override void HandleInput()
     {
         base.HandleInput();
-        if (inputManager.MousePressed(InputManager.MouseButtons.Mouse1))
+        if (inputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
 
@@ -187,7 +187,7 @@ public class TestState : GameState
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             shapes.MakeBody(this, entity, material, comp, false);
         }
-        if (inputManager.MousePressed(InputManager.MouseButtons.Mouse2))
+        if (inputManager.MousePressed(InputManager.MouseButtons.Right))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             //Polygon polygon = new Polygon(0.5f, 0.5f);
@@ -196,7 +196,7 @@ public class TestState : GameState
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             shapes.MakeBody(this, entity, material, comp, false);
         }
-        if (inputManager.MousePressed(InputManager.MouseButtons.Mouse3))
+        if (inputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }

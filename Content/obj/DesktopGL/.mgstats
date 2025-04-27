@@ -1,2 +1,4 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Games/Dev/Monogame/Learninging/Learninging/Content/Textures/ball.png","C:/Games/Dev/Monogame/Learninging/Learninging/Content/bin/DesktopGL/Textures/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.0846307
+"C:/Games/Dev/Monogame/RubedoTest/Content/Textures/ball.png","C:/Games/Dev/Monogame/RubedoTest/Content/bin/DesktopGL/Textures/ball.xnb","TextureProcessor","Texture2DContent",22004,16469,0.0638889
+"C:/Games/Dev/Monogame/RubedoTest/Content/Textures/button_circle.png","C:/Games/Dev/Monogame/RubedoTest/Content/bin/DesktopGL/Textures/button_circle.xnb","TextureProcessor","Texture2DContent",1491,16469,0.0011434
+"C:/Games/Dev/Monogame/RubedoTest/Content/Textures/button_wonky.png","C:/Games/Dev/Monogame/RubedoTest/Content/bin/DesktopGL/Textures/button_wonky.xnb","TextureProcessor","Texture2DContent",1703,262229,0.0050056
