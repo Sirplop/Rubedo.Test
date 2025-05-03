@@ -4,6 +4,7 @@ using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D;
 using Microsoft.Xna.Framework;
 using Rubedo.Physics2D.Collision.Shapes;
+using Rubedo.Input;
 
 namespace Test.Gameplay.Demo;
 
@@ -60,26 +61,26 @@ internal class Demo2 : DemoBase
     private bool shapeSet = true;
     public override void HandleInput(DemoState state)
     {
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Left))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
 
             //Circle circle = new Circle(0.5f);
             //shapes.MakeBody(circle, material, inputManager.MouseWorldPosition(), 45, false);
-            Entity entity = new Entity(state.inputManager.MouseWorldPosition());
+            Entity entity = new Entity(InputManager.MouseWorldPosition());
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Right))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Right))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             //Polygon polygon = new Polygon(0.5f, 0.5f);
             //shapes.MakeBody(polygon, material, inputManager.MouseWorldPosition(), 45, false);
-            Entity entity = new Entity(state.inputManager.MouseWorldPosition());
+            Entity entity = new Entity(InputManager.MouseWorldPosition());
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Middle))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }

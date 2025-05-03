@@ -1,14 +1,10 @@
-﻿using Learninging.Gameplay;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Rubedo.Debug;
-using Rubedo.Object;
-using Rubedo;
 using System.IO;
 using Test.Gameplay.Demo;
 
-namespace Learninging;
+namespace Test;
 
 public class DemoGame : Rubedo.RubedoEngine
 {
@@ -17,8 +13,7 @@ public class DemoGame : Rubedo.RubedoEngine
     protected override void LoadContent()
     {
         base.LoadContent();
-        //_stateManager.AddState(new TestState(_stateManager, _inputManager));
-        _stateManager.AddState(new DemoState(_stateManager, _inputManager));
+        _stateManager.AddState(new DemoState(_stateManager));
 
         _stateManager.SwitchState("DemoState");
     }

@@ -1,3 +1,3 @@
 ﻿
-using var game = new Learninging.DemoGame();
+using var game = new Test.DemoGame();
 game.Run();

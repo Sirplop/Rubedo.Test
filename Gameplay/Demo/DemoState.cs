@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Input;
 using PhysicsEngine2D;
 using Rubedo;
-using Rubedo.Debug;
+using Rubedo.EngineDebug;
+using Rubedo.Input;
+using Rubedo.Input.Conditions;
 using Rubedo.Lib;
 using Rubedo.Object;
 using Rubedo.Physics2D;
@@ -39,9 +41,12 @@ internal class DemoState : GameState
         new Demo5()
     };
 
+    private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
+    private readonly AllCondition nextDemo = new AllCondition(new KeyCondition(Keys.Right), new KeyCondition(Keys.LeftShift, true));
+
     private int selectedDemo = 0;
 
-    public DemoState(StateManager sm, InputManager ih) : base(sm, ih)
+    public DemoState(StateManager sm) : base(sm)
     {
         shapes = new Shapes(RubedoEngine.Instance);
         _name = "DemoState";
@@ -68,26 +73,26 @@ internal class DemoState : GameState
         base.HandleInput();
         demos[selectedDemo].HandleInput(this);
 
-        if (inputManager.KeyPressed(Keys.Z))
+        if (InputManager.KeyPressed(Keys.Z))
             RubedoEngine.Instance.physicsOn = !RubedoEngine.Instance.physicsOn;
-        if (inputManager.KeyPressed(Keys.X))
+        if (InputManager.KeyPressed(Keys.X))
             RubedoEngine.Instance.stepPhysics = true;
-        if (inputManager.KeyPressed(Keys.S))
+        if (InputManager.KeyPressed(Keys.S))
             showVelocity = !showVelocity;
-        if (inputManager.KeyPressed(Keys.C))
+        if (InputManager.KeyPressed(Keys.C))
             colorVelocity = !colorVelocity;
-        if (inputManager.KeyPressed(Keys.A))
+        if (InputManager.KeyPressed(Keys.A))
             showAABB = !showAABB;
-        if (inputManager.KeyPressed(Keys.O))
+        if (InputManager.KeyPressed(Keys.O))
             PhysicsWorld.showContacts = !PhysicsWorld.showContacts;
-        if (inputManager.KeyPressed(Keys.B))
+        if (InputManager.KeyPressed(Keys.B))
             PhysicsWorld.bruteForce = !PhysicsWorld.bruteForce;
-        if (inputManager.KeyPressed(Keys.D))
+        if (InputManager.KeyPressed(Keys.D))
             PhysicsWorld.drawBroadphase = !PhysicsWorld.drawBroadphase;
-        if (inputManager.KeyPressed(Keys.F))
+        if (InputManager.KeyPressed(Keys.F))
             fastPlace = !fastPlace;
 
-        if (inputManager.KeyPressed(Keys.Left))
+        if (prevDemo.Released())
         {
             Reset();
             if (selectedDemo == 0)
@@ -96,7 +101,7 @@ internal class DemoState : GameState
                 selectedDemo--;
             demos[selectedDemo].Initialize(this);
         }
-        if (inputManager.KeyPressed(Keys.Right))
+        if (nextDemo.Released())
         {
             Reset();
             selectedDemo = (selectedDemo + 1) % demos.Length;
@@ -161,8 +166,8 @@ internal class DemoState : GameState
 
     public override void Draw(Renderer sb)
     {
-        Vector2 mouse = RubedoEngine.Input.MouseWorldPosition();
-        Vector2 mouseScreen = RubedoEngine.Instance.Camera.WorldToScreenPoint(mouse);//RubedoEngine.Input.MouseScreenPosition();
+        Vector2 mouse = InputManager.MouseWorldPosition();
+        Vector2 mouseScreen = InputManager.MouseScreenPosition();
         DebugText.Instance.DrawText(mouse, 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouse.ToNiceString(), false);
         DebugText.Instance.DrawText(mouse - new Vector2(0, 30 / RubedoEngine.Instance.Camera.GetZoom()), 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouseScreen.ToNiceString(), false);
 

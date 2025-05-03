@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using PhysicsEngine2D;
 using Rubedo;
+using Rubedo.Input;
 using Rubedo.Lib;
 using Rubedo.Object;
 using Rubedo.Physics2D;
@@ -59,34 +60,34 @@ internal class Demo1 : DemoBase
     private bool shapeSet = true;
     public override void HandleInput(DemoState state)
     {
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Left) ||
-            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Left)))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Left) ||
+            (DemoState.fastPlace && InputManager.MouseDown(InputManager.MouseButtons.Left)))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
             float x = Random.Range(0.5f, 2f);
             float y = Random.Range(0.5f, 2f);
 
-            Entity entity = new Entity(state.inputManager.MouseWorldPosition(), 0, new Vector2(x, y));
+            Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Right) ||
-            (DemoState.fastPlace && state.inputManager.MouseDown(InputManager.MouseButtons.Right)))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Right) ||
+            (DemoState.fastPlace && InputManager.MouseDown(InputManager.MouseButtons.Right)))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             float x = Random.Range(0.5f, 2f);
             float y = Random.Range(0.5f, 2f);
 
-            Entity entity = new Entity(state.inputManager.MouseWorldPosition(), 0, new Vector2(x, y));
+            Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             state.MakeBody(entity, material, comp, false);
         }
-        if (state.inputManager.MousePressed(InputManager.MouseButtons.Middle))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }
 
-        if (state.inputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
         {
             layout = !layout;
             Layout(state);

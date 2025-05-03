@@ -11,12 +11,13 @@
 using Rubedo;
 using Rubedo.Object;
 using Microsoft.Xna.Framework;
-using Rubedo.Tests;
 using Microsoft.Xna.Framework.Input;
 using Rubedo.Physics2D;
 using PhysicsEngine2D;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Collision.Shapes;
+using Rubedo.Input;
+using Rubedo.EngineDebug;
 
 namespace Learninging.Gameplay;
 
@@ -27,7 +28,7 @@ public class TestState : GameState
 {
     TestPhysicsWorld shapes;
 
-    public TestState(StateManager sm, InputManager ih) : base(sm, ih) 
+    public TestState(StateManager sm) : base(sm) 
     {
         _name = "ball";
     }
@@ -177,42 +178,42 @@ public class TestState : GameState
     public override void HandleInput()
     {
         base.HandleInput();
-        if (inputManager.MousePressed(InputManager.MouseButtons.Left))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
 
             //Circle circle = new Circle(0.5f);
-            //shapes.MakeBody(circle, material, inputManager.MouseWorldPosition(), 45, false);
-            Entity entity = new Entity(inputManager.MouseWorldPosition());
+            //shapes.MakeBody(circle, material, InputManager.MouseWorldPosition(), 45, false);
+            Entity entity = new Entity(InputManager.MouseWorldPosition());
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
             shapes.MakeBody(this, entity, material, comp, false);
         }
-        if (inputManager.MousePressed(InputManager.MouseButtons.Right))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Right))
         {
             PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f);
             //Polygon polygon = new Polygon(0.5f, 0.5f);
-            //shapes.MakeBody(polygon, material, inputManager.MouseWorldPosition(), 45, false);
-            Entity entity = new Entity(inputManager.MouseWorldPosition());
+            //shapes.MakeBody(polygon, material, InputManager.MouseWorldPosition(), 45, false);
+            Entity entity = new Entity(InputManager.MouseWorldPosition());
             Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
             shapes.MakeBody(this, entity, material, comp, false);
         }
-        if (inputManager.MousePressed(InputManager.MouseButtons.Middle))
+        if (InputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
             shapeSet = !shapeSet;
         }
 
-        if (inputManager.KeyPressed(Keys.Z))
+        if (InputManager.KeyPressed(Keys.Z))
             RubedoEngine.Instance.physicsOn = !RubedoEngine.Instance.physicsOn;
-        if (inputManager.KeyPressed(Keys.X))
+        if (InputManager.KeyPressed(Keys.X))
             RubedoEngine.Instance.stepPhysics = true;
 
-        /*if (inputManager.MouseDown(InputManager.MouseButtons.Mouse1))
+        /*if (InputManager.MouseDown(InputManager.MouseButtons.Mouse1))
         {
-            material.Position = inputManager.MouseWorldPosition();
+            material.Position = InputManager.MouseWorldPosition();
             entityCollider.shape.TransformUpdateRequired = true;
             entityCollider.shape.BoundsUpdateRequired = true;
         }
-        if (inputManager.MouseDown(InputManager.MouseButtons.Mouse2))
+        if (InputManager.MouseDown(InputManager.MouseButtons.Mouse2))
         {
             material.Rotation += 60 * RubedoEngine.DeltaTime;
             entityCollider.shape.TransformUpdateRequired = true;
@@ -220,29 +221,29 @@ public class TestState : GameState
         }*/
 
         /*
-        if (inputManager.KeyDown(Keys.A))
+        if (InputManager.KeyDown(Keys.A))
             ball.MoveLeft();
-        if (inputManager.KeyDown(Keys.D))
+        if (InputManager.KeyDown(Keys.D))
             ball.MoveRight();
-        if (inputManager.KeyDown(Keys.W))
+        if (InputManager.KeyDown(Keys.W))
             ball.MoveUp();
-        if (inputManager.KeyDown(Keys.S))
+        if (InputManager.KeyDown(Keys.S))
             ball.MoveDown();*/
 
-        if (inputManager.KeyDown(Keys.J))
+        if (InputManager.KeyDown(Keys.J))
             RubedoEngine.Instance.Camera.Move(new Vector2(-0.3f * RubedoEngine.SizeOfMeter, 0));
-        if (inputManager.KeyDown(Keys.L))
+        if (InputManager.KeyDown(Keys.L))
             RubedoEngine.Instance.Camera.Move(new Vector2(0.3f * RubedoEngine.SizeOfMeter, 0));
-        if (inputManager.KeyDown(Keys.K))
+        if (InputManager.KeyDown(Keys.K))
             RubedoEngine.Instance.Camera.Move(new Vector2(0, -0.3f * RubedoEngine.SizeOfMeter));
-        if (inputManager.KeyDown(Keys.I))
+        if (InputManager.KeyDown(Keys.I))
             RubedoEngine.Instance.Camera.Move(new Vector2(0, 0.3f * RubedoEngine.SizeOfMeter));
 
-        if (inputManager.KeyPressed(Keys.E))
+        if (InputManager.KeyPressed(Keys.E))
         {
             RubedoEngine.Instance.Camera.IncZoom();
         }
-        if (inputManager.KeyPressed(Keys.Q))
+        if (InputManager.KeyPressed(Keys.Q))
         {
             RubedoEngine.Instance.Camera.DecZoom();
         }

@@ -27,20 +27,23 @@ internal class Demo5 : DemoBase
         vert = new Vertical();
         Horizontal hor1 = new Horizontal();
         Horizontal hor2 = new Horizontal();
-
-        //vert.MaxSize = new Vector2(100, 100);
-        //hor1.paddingTop = 10;
-        //hor1.paddingBottom = 10;
-        //hor1.paddingLeft = 10;
-        //hor1.childPadding = 5;
+        Horizontal hor3 = new Horizontal();
 
         hor1.AddChild(GetButton(1));
         hor1.AddChild(GetButton(2));
+        hor1.AddChild(GetButton(3));
 
-        hor2.AddChild(GetButton(3));
+        hor2.AddChild(GetButton(4));
+        hor2.AddChild(GetButton(5));
+        hor2.AddChild(GetButton(6));
+
+        hor3.AddChild(GetButton(7));
+        hor3.AddChild(GetButton(8));
+        hor3.AddChild(GetButton(9));
 
         vert.AddChild(hor1);
         vert.AddChild(hor2);
+        vert.AddChild(hor3);
 
         GUI.Root.AddChild(vert);
     }
@@ -53,16 +56,29 @@ internal class Demo5 : DemoBase
         button.MinSize = new Vector2(100, -1);
         image.Anchor = Anchor.Center;
 
-        button.OnPressed += () => TestPress(x, image);
-        button.OnHeld += () => TestHeld(x);
-        button.OnReleased += () => TestReleased(x, image);
+        button.OnPressed += (b) => TestPress(x, image);
+        button.OnHeld += (b) => TestHeld(x, b);
+        button.OnReleased += (b) => TestReleased(x);
+        //button.OnReleasedNoHover += (b) => { image.Color = Color.White; };
+        //button.OnHover += (s) => { if (s is Button b && !b.Clicked) image.Color = Color.LightGray; };
+        //button.OnHoverLost += (s) => { if (s is Button b && !b.Clicked) image.Color = Color.White; };
+        button.OnFocused += (s) => { image.Color = Color.Yellow; };
+        button.OnFocusLost += (s) => { image.Color = Color.White; };
         return button;
     }
 
     private void TestPress(int x, Image img)
     {
-        img.Color = Color.Gray;
+        //img.Color = Color.Gray;
         Debug.WriteLine($"You pressed button {x}! Yippee!");
+    }
+    private void TestHeld(int x, Button button)
+    {
+        Debug.WriteLine($"Holding button {x}... for {button.HeldDuration.ToString("0.00")} seconds.");
+    }
+    private void TestReleased(int x)
+    {
+        Debug.WriteLine($"You released button {x}! So sad!");
         switch (vert.Anchor)
         {
             case Anchor.TopLeft:
@@ -94,19 +110,9 @@ internal class Demo5 : DemoBase
                 break;
         }
     }
-    private void TestHeld(int x)
-    {
-        Debug.WriteLine($"Holding button {x}...");
-    }
-    private void TestReleased(int x, Image img)
-    {
-        img.Color = Color.White;
-        Debug.WriteLine($"You released button {x}! So sad!");
-    }
 
     public override void Update(DemoState state)
     {
-
     }
     public override void HandleInput(DemoState state) { }
 }
