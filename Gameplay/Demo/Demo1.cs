@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using PhysicsEngine2D;
 using Rubedo;
 using Rubedo.Input;
@@ -87,7 +88,7 @@ internal class Demo1 : DemoBase
             shapeSet = !shapeSet;
         }
 
-        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
+        if (InputManager.KeyPressed(Keys.Up))
         {
             layout = !layout;
             Layout(state);

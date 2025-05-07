@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Rubedo;
 using Rubedo.Components;
+using Rubedo.Internal.Assets;
 using Rubedo.UI;
 using Rubedo.UI.Graphics;
 using Rubedo.UI.Input;
@@ -41,6 +41,13 @@ internal class Demo5 : DemoBase
         hor3.AddChild(GetButton(8));
         hor3.AddChild(GetButton(9));
 
+        hor1.childPadding = 5;
+        hor2.childPadding = 5;
+        hor3.childPadding = 5;
+        vert.childPadding = 5;
+        vert.paddingLeft = 5;
+        vert.paddingTop = 5;
+
         vert.AddChild(hor1);
         vert.AddChild(hor2);
         vert.AddChild(hor3);
@@ -52,67 +59,17 @@ internal class Demo5 : DemoBase
         Button button = new Button();
         Image image = new Image(new Rubedo.Graphics.Texture2DRegion(AssetManager.LoadTexture("button_circle")));
         button.AddChild(image);
-
-        button.MinSize = new Vector2(100, -1);
+        button.AddChild(new SelectableTintSet(image, 1f));
         image.Anchor = Anchor.Center;
 
-        button.OnPressed += (b) => TestPress(x, image);
-        button.OnHeld += (b) => TestHeld(x, b);
-        button.OnReleased += (b) => TestReleased(x);
-        //button.OnReleasedNoHover += (b) => { image.Color = Color.White; };
-        //button.OnHover += (s) => { if (s is Button b && !b.Clicked) image.Color = Color.LightGray; };
-        //button.OnHoverLost += (s) => { if (s is Button b && !b.Clicked) image.Color = Color.White; };
-        button.OnFocused += (s) => { image.Color = Color.Yellow; };
-        button.OnFocusLost += (s) => { image.Color = Color.White; };
-        return button;
-    }
+        button.OnReleased += (b) => b.SetActive(false);
 
-    private void TestPress(int x, Image img)
-    {
-        //img.Color = Color.Gray;
-        Debug.WriteLine($"You pressed button {x}! Yippee!");
-    }
-    private void TestHeld(int x, Button button)
-    {
-        Debug.WriteLine($"Holding button {x}... for {button.HeldDuration.ToString("0.00")} seconds.");
-    }
-    private void TestReleased(int x)
-    {
-        Debug.WriteLine($"You released button {x}! So sad!");
-        switch (vert.Anchor)
-        {
-            case Anchor.TopLeft:
-                vert.Anchor = Anchor.Top;
-                break;
-            case Anchor.Top:
-                vert.Anchor = Anchor.TopRight;
-                break;
-            case Anchor.TopRight:
-                vert.Anchor = Anchor.Left;
-                break;
-            case Anchor.Left:
-                vert.Anchor = Anchor.Center;
-                break;
-            case Anchor.Center:
-                vert.Anchor = Anchor.Right;
-                break;
-            case Anchor.Right:
-                vert.Anchor = Anchor.BottomLeft;
-                break;
-            case Anchor.BottomLeft:
-                vert.Anchor = Anchor.Bottom;
-                break;
-            case Anchor.Bottom:
-                vert.Anchor = Anchor.BottomRight;
-                break;
-            case Anchor.BottomRight:
-                vert.Anchor = Anchor.TopLeft;
-                break;
-        }
+        return button;
     }
 
     public override void Update(DemoState state)
     {
+
     }
     public override void HandleInput(DemoState state) { }
 }

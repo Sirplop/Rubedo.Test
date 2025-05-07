@@ -6,6 +6,7 @@ using Rubedo.EngineDebug;
 using Rubedo.Input;
 using Rubedo.Input.Conditions;
 using Rubedo.Lib;
+using Rubedo.Lib.Extensions;
 using Rubedo.Object;
 using Rubedo.Physics2D;
 using Rubedo.Physics2D.Collision.Shapes;
@@ -44,6 +45,11 @@ internal class DemoState : GameState
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
     private readonly AllCondition nextDemo = new AllCondition(new KeyCondition(Keys.Right), new KeyCondition(Keys.LeftShift, true));
 
+    private readonly KeyCondition cameraLeft = new KeyCondition(Keys.H);
+    private readonly KeyCondition cameraRight = new KeyCondition(Keys.K);
+    private readonly KeyCondition cameraUp = new KeyCondition(Keys.U);
+    private readonly KeyCondition cameraDown = new KeyCondition(Keys.J);
+
     private int selectedDemo = 0;
 
     public DemoState(StateManager sm) : base(sm)
@@ -62,7 +68,7 @@ internal class DemoState : GameState
         base.Enter();
 
         RubedoEngine.SizeOfMeter = 1;
-        RubedoEngine.Instance.World.ResetGravity();
+        PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.Camera.SetZoom(24);
 
         demos[selectedDemo].Initialize(this);
@@ -92,6 +98,15 @@ internal class DemoState : GameState
         if (InputManager.KeyPressed(Keys.F))
             fastPlace = !fastPlace;
 
+        if (cameraLeft.Pressed() || cameraLeft.Held())
+            RubedoEngine.Instance.Camera.Move(new Vector2(-1, 0));
+        if (cameraRight.Pressed() || cameraRight.Held())
+            RubedoEngine.Instance.Camera.Move(new Vector2(1, 0));
+        if (cameraUp.Pressed() || cameraUp.Held())
+            RubedoEngine.Instance.Camera.Move(new Vector2(0, 1));
+        if (cameraDown.Pressed() || cameraDown.Held())
+            RubedoEngine.Instance.Camera.Move(new Vector2(0, -1));
+
         if (prevDemo.Released())
         {
             Reset();
@@ -113,7 +128,7 @@ internal class DemoState : GameState
     {
         drawDebug = true;
         RubedoEngine.SizeOfMeter = 1;
-        RubedoEngine.Instance.World.ResetGravity();
+        PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.Camera.SetZoom(24);
         RubedoEngine.Instance.World.Clear();
         foreach (Entity ent in Entities)
@@ -144,7 +159,6 @@ internal class DemoState : GameState
     {
         if (RubedoEngine.Instance.World.bodies.Count == 0)
             return;
-        RubedoEngine.Instance.Camera.GetExtents(out Vector2 min, out Vector2 max);
 
         for (int i = 0; i < RubedoEngine.Instance.World.bodies.Count; i++)
         {
@@ -154,7 +168,7 @@ internal class DemoState : GameState
 
             AABB bounds = body.bounds;
 
-            if (bounds.max.Y < min.Y)
+            if (bounds.max.Y < -50)
             {
                 RubedoEngine.Instance.World.RemoveBody(body);
                 //if (!RubedoEngine.Instance.World.RemoveBody(body))
@@ -168,8 +182,8 @@ internal class DemoState : GameState
     {
         Vector2 mouse = InputManager.MouseWorldPosition();
         Vector2 mouseScreen = InputManager.MouseScreenPosition();
-        DebugText.Instance.DrawText(mouse, 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouse.ToNiceString(), false);
-        DebugText.Instance.DrawText(mouse - new Vector2(0, 30 / RubedoEngine.Instance.Camera.GetZoom()), 0.5f / RubedoEngine.Instance.Camera.GetZoom(), mouseScreen.ToNiceString(), false);
+        DebugText.Instance.DrawText(mouseScreen, 1f, mouse.ToNiceString(), 16, Renderer.Space.Screen);
+        DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);
 
         base.Draw(sb);
 
@@ -188,7 +202,7 @@ internal class DemoState : GameState
                 {
                     float val = body.LinearVelocity.Length() * 20f;
                     float vel = 220 - System.MathF.Min(val, 220) % 360;
-                    MathColor.HsvToRgb(vel, 1, 1, out int r, out int g, out int b);
+                    ColorExtensions.HsvToRgb(vel, 1, 1, out int r, out int g, out int b);
                     speedColor = new Color(r, g, b);
                 }
             }
@@ -241,7 +255,10 @@ internal class DemoState : GameState
 
         shapes.End();
         if (!drawDebug)
+        {
+            DebugText.Instance.Clear();
             return;
+        }
         //draw text
         DebugText debugText = DebugText.Instance;
         debugText.DrawTextStack($"Bodies: {RubedoEngine.Instance.World.bodies.Count} " +
