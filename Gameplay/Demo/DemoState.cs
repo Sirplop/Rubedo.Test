@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using PhysicsEngine2D;
 using Rubedo;
 using Rubedo.EngineDebug;
 using Rubedo.Input;
@@ -9,13 +8,15 @@ using Rubedo.Lib;
 using Rubedo.Lib.Extensions;
 using Rubedo.Object;
 using Rubedo.Physics2D;
-using Rubedo.Physics2D.Collision.Shapes;
+using Rubedo.Physics2D.Dynamics.Shapes;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Math;
 using Rubedo.Rendering;
 using Rubedo.UI;
 using System;
 using System.Collections.Generic;
+using Rubedo.Physics2D.Common;
+using Rubedo.UI.Text;
 
 namespace Test.Gameplay.Demo;
 
@@ -51,6 +52,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraDown = new KeyCondition(Keys.J);
 
     private int selectedDemo = 0;
+    public List<Label> labels = new List<Label>();
 
     public DemoState(StateManager sm) : base(sm)
     {
@@ -70,6 +72,9 @@ internal class DemoState : GameState
         RubedoEngine.SizeOfMeter = 1;
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.Camera.SetZoom(24);
+
+        //construct debug GUI
+
 
         demos[selectedDemo].Initialize(this);
     }

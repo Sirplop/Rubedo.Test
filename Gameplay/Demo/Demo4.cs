@@ -3,6 +3,7 @@ using Rubedo;
 using Rubedo.Object;
 using Rubedo.Physics2D;
 using Rubedo.Physics2D.Dynamics;
+using Rubedo.Physics2D.Dynamics.Shapes;
 
 namespace Test.Gameplay.Demo;
 
@@ -34,11 +35,11 @@ internal class Demo4 : DemoBase
 
 
         entity = new Entity(new Vector2(0, 0));
-        comp = Collider.CreateUnitShape(Rubedo.Physics2D.Collision.Shapes.ShapeType.Polygon, 3);
+        comp = Collider.CreateUnitShape(ShapeType.Polygon, 3);
         meanPolyBody = state.MakeBody(entity, material, comp, true);
 
         entity = new Entity(new Vector2(-5, -2.5f));
-        meanCollider = Collider.CreateUnitShape(Rubedo.Physics2D.Collision.Shapes.ShapeType.Circle);
+        meanCollider = Collider.CreateUnitShape(ShapeType.Circle);
         meanCircleBody = state.MakeBody(entity, material, meanCollider, true);
 
         /*
@@ -65,7 +66,7 @@ internal class Demo4 : DemoBase
         polyBody.Entity.transform.LocalRotation += RubedoEngine.DeltaTime;
         */
         curScale = meanPolyBody.Entity.transform.LocalScale;
-        y = Rubedo.Lib.Wave.Sine((float)RubedoEngine.RawTime, 5000, 2, 0) + 3;
+        y = Rubedo.Lib.Wave.Sine((float)RubedoEngine.RawTime, 5, 2, 0) + 3;
         curScale.Y = y;
         meanPolyBody.Transform.LocalScale = curScale;
         meanPolyBody.Transform.LocalRotation += RubedoEngine.DeltaTime;

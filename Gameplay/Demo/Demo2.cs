@@ -3,7 +3,7 @@ using Rubedo.Object;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D;
 using Microsoft.Xna.Framework;
-using Rubedo.Physics2D.Collision.Shapes;
+using Rubedo.Physics2D.Dynamics.Shapes;
 using Rubedo.Input;
 
 namespace Test.Gameplay.Demo;

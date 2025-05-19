@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using PhysicsEngine2D;
 using Rubedo;
 using Rubedo.Input;
 using Rubedo.Lib;
 using Rubedo.Object;
 using Rubedo.Physics2D;
-using Rubedo.Physics2D.Collision.Shapes;
 using Rubedo.Physics2D.Dynamics;
+using Rubedo.Physics2D.Dynamics.Shapes;
 
 namespace Test.Gameplay.Demo;
 
