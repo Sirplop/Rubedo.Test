@@ -17,6 +17,9 @@ using System;
 using System.Collections.Generic;
 using Rubedo.Physics2D.Common;
 using Rubedo.UI.Text;
+using FontStashSharp;
+using Rubedo.Internal.Assets;
+using Rubedo.UI.Layout;
 
 namespace Test.Gameplay.Demo;
 
@@ -30,7 +33,7 @@ internal class DemoState : GameState
     public static bool showAABB = false;
     public static bool fastPlace = false;
 
-    public bool drawDebug = true;
+    public Vertical debugRoot;
 
     private Shapes shapes;
 
@@ -52,7 +55,9 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraDown = new KeyCondition(Keys.J);
 
     private int selectedDemo = 0;
-    public List<Label> labels = new List<Label>();
+    public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
+
+    private float deltaTime = 0.0f;
 
     public DemoState(StateManager sm) : base(sm)
     {
@@ -62,12 +67,16 @@ internal class DemoState : GameState
 
     public override void LoadContent()
     {
+        AssetManager.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
         base.LoadContent();
     }
 
     public override void Enter()
     {
         base.Enter();
+        debugRoot = new Vertical();
+        debugRoot.Offset = new Vector2(30, 0);
+        GUI.Root.AddChild(debugRoot);
 
         RubedoEngine.SizeOfMeter = 1;
         PhysicsWorld.ResetGravity();
@@ -75,8 +84,42 @@ internal class DemoState : GameState
 
         //construct debug GUI
 
-
         demos[selectedDemo].Initialize(this);
+    }
+
+    public void CreateFPSDebugGUI()
+    {
+        AddDebugLabel(debugRoot, () => string.Format("{0:0.0} ms ({1:0.} fps)", deltaTime * 1000.0f, 1.0f / deltaTime));
+    }
+
+    public void CreateDemoDebugGUI()
+    {
+        AddDebugLabel(debugRoot, () => $"Selected Demo: {demos[selectedDemo].description}");
+        AddDebugLabel(debugRoot, () => $"Demo {selectedDemo + 1} of {demos.Length}");
+    }
+
+    public void CreatePhysicsDebugGUI()
+    {
+        AddDebugLabel(debugRoot, () => RubedoEngine.Instance.World.timer.GetAsString(", "));
+        AddDebugLabel(debugRoot, () => $"Bodies: {RubedoEngine.Instance.World.bodies.Count} " +
+            $"| Physics time: {RubedoEngine.Instance._physicsTimer.GetAsString("")}");
+        AddDebugLabel(debugRoot, () => $"(C)olor velocity: {(colorVelocity ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(S)how velocity: {(showVelocity ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(A)ABBs visible: {(showAABB ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"C(o)ntacts visible: {(PhysicsWorld.showContacts ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(D)raw Broadphase: {(PhysicsWorld.drawBroadphase ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(B)rute force: {(PhysicsWorld.bruteForce ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(F)ast Place: {(fastPlace ? "On" : "Off")}");
+    }
+
+    private void AddDebugLabel(Vertical vert, Func<string> valueFunc)
+    {
+        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        Label label = new Label(font, string.Empty, Color.AntiqueWhite, 18);
+        label.TightLineHeight = true;
+        DebugTextEntry entry = new DebugTextEntry(label, valueFunc);
+        debugText.Add(entry);
+        vert.AddChild(label);
     }
 
     public override void HandleInput()
@@ -131,7 +174,6 @@ internal class DemoState : GameState
 
     private void Reset()
     {
-        drawDebug = true;
         RubedoEngine.SizeOfMeter = 1;
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.Camera.SetZoom(24);
@@ -139,7 +181,11 @@ internal class DemoState : GameState
         foreach (Entity ent in Entities)
             Entities.Remove(ent);
 
-        GUI.Root.Clear();
+        //remove all GUI elements except the debug vertical.    
+        GUI.Root.RemoveChild(debugRoot);
+        GUI.Root.DestroyChildren();
+        debugRoot.DestroyChildren();
+        GUI.Root.AddChild(debugRoot);
     }
 
     public PhysicsBody MakeBody(Entity entity, PhysicsMaterial material, Collider collider, bool isStatic)
@@ -156,11 +202,16 @@ internal class DemoState : GameState
 
     public override void Update()
     {
+        deltaTime += (RubedoEngine.RawDeltaTime - deltaTime) * 0.1f;
         base.Update();
         demos[selectedDemo].Update(this);
         DeleteIfTooFar();
+        for (int i = 0; i < debugText.Count; i++)
+        {
+            debugText[i].Update();
+        }
     }
-    public void DeleteIfTooFar()
+    private void DeleteIfTooFar()
     {
         if (RubedoEngine.Instance.World.bodies.Count == 0)
             return;
@@ -185,10 +236,10 @@ internal class DemoState : GameState
 
     public override void Draw(Renderer sb)
     {
-        Vector2 mouse = InputManager.MouseWorldPosition();
+        /*Vector2 mouse = InputManager.MouseWorldPosition();
         Vector2 mouseScreen = InputManager.MouseScreenPosition();
         DebugText.Instance.DrawText(mouseScreen, 1f, mouse.ToNiceString(), 16, Renderer.Space.Screen);
-        DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);
+        DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);*/
 
         base.Draw(sb);
 
@@ -254,29 +305,29 @@ internal class DemoState : GameState
 
         RubedoEngine.Instance.World.DebugDraw(shapes);
 
-        RubedoEngine.Instance.Camera.GetExtents(out Vector2 min, out _);
+        /*RubedoEngine.Instance.Camera.GetExtents(out Vector2 min, out _);
         shapes.DrawLine(mouse, new Vector2(mouse.X, min.Y), Color.DarkRed);
-        shapes.DrawLine(mouse, new Vector2(min.X, mouse.Y), Color.DarkRed);
+        shapes.DrawLine(mouse, new Vector2(min.X, mouse.Y), Color.DarkRed);*/
 
         shapes.End();
-        if (!drawDebug)
-        {
-            DebugText.Instance.Clear();
-            return;
-        }
         //draw text
-        DebugText debugText = DebugText.Instance;
-        debugText.DrawTextStack($"Bodies: {RubedoEngine.Instance.World.bodies.Count} " +
-            $"| Physics time: {RubedoEngine.Instance._physicsTimer.GetAsString("")}");
-        debugText.DrawTextStack($"Selected Demo: {demos[selectedDemo].description}");
-        debugText.DrawTextStack($"Demo {selectedDemo + 1} of {demos.Length}");
-        debugText.DrawTextStack($"(C)olor velocity: {(colorVelocity ? "Yes" : "No")}");
-        debugText.DrawTextStack($"(S)how velocity: {(showVelocity ? "Yes" : "No")}");
-        debugText.DrawTextStack($"(A)ABBs visible: {(showAABB ? "Yes" : "No")}");
-        debugText.DrawTextStack($"C(o)ntacts visible: {(PhysicsWorld.showContacts ? "Yes" : "No")}");
-        debugText.DrawTextStack($"(D)raw Broadphase: {(PhysicsWorld.drawBroadphase ? "Yes" : "No")}");
-        debugText.DrawTextStack($"(B)rute force: {(PhysicsWorld.bruteForce ? "Yes" : "No")}");
-        debugText.DrawTextStack($"(F)ast Place: {(fastPlace ? "On" : "Off")}");
-        debugText.Draw(sb);
+        DebugText.Instance.Draw(sb);
+    }
+
+    public class DebugTextEntry
+    {
+        Func<string> valueFunc;
+        public Label label;
+
+        public DebugTextEntry(Label label, Func<string> valueFunc)
+        {
+            this.label = label;
+            this.valueFunc = valueFunc;
+        }
+
+        public void Update()
+        {
+            label.Text = valueFunc();
+        }
     }
 }

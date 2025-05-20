@@ -21,6 +21,10 @@ internal class Demo3 : DemoBase
 
     public override void Initialize(DemoState state)
     {
+        state.CreateFPSDebugGUI();
+        state.CreateDemoDebugGUI();
+        state.CreatePhysicsDebugGUI();
+
         RubedoEngine.Instance.Camera.GetExtents(out float width, out float height);
 
         PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
@@ -29,12 +33,12 @@ internal class Demo3 : DemoBase
 
         //left wall
         entity = new Entity(new Vector2(-width / 2 + 0.5f, 0.6f));
-        comp = Collider.CreateBox(1, height - 0.5f);
+        comp = Collider.CreateBox(1, (height - 0.5f) * 10f);
         state.MakeBody(entity, material, comp, true);
 
         //right wall
         entity = new Entity(new Vector2(width / 2 - 0.5f, 0.6f));
-        comp = Collider.CreateBox(1, height - 0.5f);
+        comp = Collider.CreateBox(1, (height - 0.5f) * 10f);
         state.MakeBody(entity, material, comp, true);
 
         //floor

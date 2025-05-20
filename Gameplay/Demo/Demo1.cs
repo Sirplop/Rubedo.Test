@@ -31,6 +31,10 @@ internal class Demo1 : DemoBase
 
     public override void Initialize(DemoState state)
     {
+        state.CreateFPSDebugGUI();
+        state.CreateDemoDebugGUI();
+        state.CreatePhysicsDebugGUI();
+
         RubedoEngine.Instance.Camera.GetExtents(out float width, out float height);
 
         PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0, 0, 0.5f);

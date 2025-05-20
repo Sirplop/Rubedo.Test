@@ -32,22 +32,21 @@ internal class Demo5 : DemoBase
 
     public override void Initialize(DemoState state)
     {
-        state.drawDebug = false; /*
         AssetManager.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
-
+        
         vert = new Vertical();
         Horizontal hor1 = new Horizontal();
         Horizontal hor2 = new Horizontal();
         Horizontal hor3 = new Horizontal();
 
-        /*hor1.AddChild(GetButton(1));
+        hor1.AddChild(GetButton(1));
         hor1.AddChild(GetButton(2));
         hor1.AddChild(GetButton(3));
 
         hor2.AddChild(GetButton(4));
         hor2.AddChild(GetButton(5));
-        hor2.AddChild(GetButton(6));*/
-        /*
+        hor2.AddChild(GetButton(6));
+        
         hor3.AddChild(GetButtonTile(7));
         hor3.AddChild(GetButtonTile(8));
         hor3.AddChild(GetButtonTile(9));
@@ -73,21 +72,25 @@ internal class Demo5 : DemoBase
         textButton.AddChild(new SelectableTintSet(text, 1f));
         textButton.AddChild(text);
         textButton.OnReleased += TextButtonCallback;
-        vert.AddChild(textButton);*/
-        //GUI.Root.AddChild(textButton);
+        vert.AddChild(textButton);
 
         image = new Image(AssetManager.LoadTexture("ball"), 320, 320);
         image.drawMode = Image.DrawMode.Tiled;
+        image.Anchor = Anchor.BottomRight;
         image.uvOffset = new Vector2(0.5f, 0.5f);
-        image.Anchor = Anchor.Center;
         GUI.Root.AddChild(image);
 
+        UIComponent comp = GUI.Root.Children[0];
+        GUI.Root.RemoveChild(comp);
+        GUI.Root.AddChild(comp);
+
+        state.CreateFPSDebugGUI();
     }
     private Button GetButton(int x)
     {
         Button button = new Button();
         NineSliceImage image = new NineSliceImage(new Texture2DRegion(AssetManager.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
-        image.Image.filled = false;
+        image.Image.filled = true;
         images.Add(image);
         FontSystem font = AssetManager.GetFontSystem("fs-default");
         Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
@@ -164,14 +167,11 @@ internal class Demo5 : DemoBase
     private bool pauseTextScale = false;
     public override void Update(DemoState state)
     {
-        /*if (pauseTextScale)
+        if (pauseTextScale)
             return;
         float t = Rubedo.Lib.Wave.Sine((float)RubedoEngine.RawTime, 4, 0.5f, 0) + 0.5f;
         float val = Mix(64, 512, t);
         text.MaxSize = new Vector2(val, -1);
-
-        Vector2 mouse = InputManager.MouseScreenPosition();
-        vert.MaxSize = new Vector2(-1, mouse.Y + 10);*/
 
         Vector2 mouse = InputManager.InverseMouseScreenPosition();
         image.uvOffset = new Vector2(mouse.X / 64f, mouse.Y / 64f);
