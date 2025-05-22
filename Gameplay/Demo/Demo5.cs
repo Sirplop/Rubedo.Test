@@ -50,6 +50,7 @@ internal class Demo5 : DemoBase
         hor3.AddChild(GetButtonTile(7));
         hor3.AddChild(GetButtonTile(8));
         hor3.AddChild(GetButtonTile(9));
+        hor3.Anchor = Anchor.Top;
 
         hor1.childPadding = 5;
         hor2.childPadding = 5;
