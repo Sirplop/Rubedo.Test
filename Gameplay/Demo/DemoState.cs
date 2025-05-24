@@ -43,7 +43,8 @@ internal class DemoState : GameState
         new Demo2(),
         new Demo3(),
         new Demo4(),
-        new Demo5()
+        new Demo5(),
+        new Demo6()
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
