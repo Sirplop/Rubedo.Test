@@ -170,17 +170,12 @@ internal class Demo5 : DemoBase
     {
         if (pauseTextScale)
             return;
-        float t = Rubedo.Lib.Wave.Sine((float)RubedoEngine.RawTime, 4, 0.5f, 0) + 0.5f;
-        float val = Mix(64, 512, t);
+        float t = Wave.Sine((float)Time.RunningTime, 4, 0.5f, 0) + 0.5f;
+        float val = Math.Mix(64, 512, t);
         text.MaxSize = new Vector2(val, -1);
 
-        Vector2 mouse = InputManager.InverseMouseScreenPosition();
+        Vector2 mouse = RubedoEngine.Instance.Camera.VirtualViewport.Size - InputManager.MouseScreenPosition();
         image.uvOffset = new Vector2(mouse.X / 64f, mouse.Y / 64f);
-    }
-    public static float Mix(float a, float b, float weightB)
-    {
-        //also written as   a + (b - a) * t = c
-        return ((1 - weightB) * a) + (weightB * b);
     }
     public override void HandleInput(DemoState state) 
     { 

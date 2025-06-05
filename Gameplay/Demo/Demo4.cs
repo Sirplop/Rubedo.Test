@@ -70,10 +70,10 @@ internal class Demo4 : DemoBase
         polyBody.Entity.transform.LocalRotation += RubedoEngine.DeltaTime;
         */
         curScale = meanPolyBody.Entity.transform.LocalScale;
-        y = Rubedo.Lib.Wave.Sine((float)RubedoEngine.RawTime, 5, 2, 0) + 3;
+        y = Rubedo.Lib.Wave.Sine((float)Time.RunningTime, 5, 2, 0) + 3;
         curScale.Y = y;
         meanPolyBody.Transform.LocalScale = curScale;
-        meanPolyBody.Transform.LocalRotation += RubedoEngine.DeltaTime;
+        meanPolyBody.Transform.LocalRotation += Time.DeltaTime;
         Vector2 pos = meanPolyBody.Entity.transform.WorldToLocalPosition(circPos);
         meanCircleBody.compTransform.LocalPosition = pos;
         meanCollider.compTransform.LocalPosition = pos;

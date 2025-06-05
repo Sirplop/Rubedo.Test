@@ -34,8 +34,10 @@ internal class Demo1 : DemoBase
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
         state.CreatePhysicsDebugGUI();
+        state.CreateMouseDebugGUI();
 
-        RubedoEngine.Instance.Camera.GetExtents(out float width, out float height);
+        const float width = 33.3f;
+        const float height = 20f;
 
         PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0, 0, 0.5f);
         Entity entity;
