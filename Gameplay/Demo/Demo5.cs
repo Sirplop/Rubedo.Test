@@ -174,7 +174,7 @@ internal class Demo5 : DemoBase
         float val = Math.Mix(64, 512, t);
         text.MaxSize = new Vector2(val, -1);
 
-        Vector2 mouse = RubedoEngine.Instance.Camera.VirtualViewport.Size - InputManager.MouseScreenPosition();
+        Vector2 mouse = state.MainCamera.VirtualViewport.Size - InputManager.MouseScreenPosition();
         image.uvOffset = new Vector2(mouse.X / 64f, mouse.Y / 64f);
     }
     public override void HandleInput(DemoState state) 

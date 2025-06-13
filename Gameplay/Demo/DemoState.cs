@@ -20,6 +20,8 @@ using Rubedo.UI.Text;
 using FontStashSharp;
 using Rubedo.Internal.Assets;
 using Rubedo.UI.Layout;
+using Microsoft.Xna.Framework.Graphics;
+using Rubedo.Rendering.Viewports;
 
 namespace Test.Gameplay.Demo;
 
@@ -44,8 +46,7 @@ internal class DemoState : GameState
         new Demo3(),
         new Demo4(),
         new Demo5(),
-        new Demo6(),
-        new Demo7()
+        new Demo6()
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -55,12 +56,19 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRight = new KeyCondition(Keys.K);
     private readonly KeyCondition cameraUp = new KeyCondition(Keys.U);
     private readonly KeyCondition cameraDown = new KeyCondition(Keys.J);
+    private readonly KeyCondition cameraScaleUp = new KeyCondition(Keys.OemPlus);
+    private readonly KeyCondition cameraScaleDown = new KeyCondition(Keys.OemMinus);
+    private readonly KeyCondition cameraRotateCW = new KeyCondition(Keys.I);
+    private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
+    private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
     private int selectedDemo = 0;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
     private double deltaTime = 0.0f;
+
+    private Camera _camera;
 
     public DemoState(StateManager sm) : base(sm)
     {
@@ -77,11 +85,14 @@ internal class DemoState : GameState
     public override void Enter()
     {
         base.Enter();
+        _camera = new Camera(this, new PixelViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 500, 500), 0);
+        _camera.RenderLayers.Add((int)RenderLayer.Default);
+        _camera.RenderLayers.Add((int)RenderLayer.UI);
         debugRoot = new Vertical();
         debugRoot.Offset = new Vector2(30, 0);
         GUI.Root.AddChild(debugRoot);
 
-        RubedoEngine.Instance.Camera.Z = 1 / 24f;
+        _camera.Z = 1 / 24f;
         RubedoEngine.SizeOfMeter = 1;
         PhysicsWorld.ResetGravity();
 
@@ -161,13 +172,27 @@ internal class DemoState : GameState
             fastPlace = !fastPlace;
 
         if (cameraLeft.Pressed() || cameraLeft.Held())
-            RubedoEngine.Instance.Camera.XY += new Vector2(-1, 0);
+            MainCamera.XY += new Vector2(-1, 0);
         if (cameraRight.Pressed() || cameraRight.Held())
-            RubedoEngine.Instance.Camera.XY += new Vector2(1, 0);
+            MainCamera.XY += new Vector2(1, 0);
         if (cameraUp.Pressed() || cameraUp.Held())
-            RubedoEngine.Instance.Camera.XY += new Vector2(0, 1);
+            MainCamera.XY += new Vector2(0, 1);
         if (cameraDown.Pressed() || cameraDown.Held())
-            RubedoEngine.Instance.Camera.XY += new Vector2(0, -1);
+            MainCamera.XY += new Vector2(0, -1);
+        if (cameraRotateCW.Pressed() || cameraRotateCW.Held())
+            MainCamera.Rotation += 0.01f;
+        if (cameraRotateCCW.Pressed() || cameraRotateCCW.Held())
+            MainCamera.Rotation -= 0.01f;
+        if (cameraScaleDown.Pressed() || cameraScaleDown.Held())
+            MainCamera.Scale -= new Vector2(0.01f, 0.01f);
+        if (cameraScaleUp.Pressed() || cameraScaleUp.Held())
+            MainCamera.Scale += new Vector2(0.01f, 0.01f);
+        if (cameraReset.Pressed())
+        {
+            MainCamera.XY = Vector2.Zero;
+            MainCamera.Rotation = 0;
+            MainCamera.Scale = Vector2.One;
+        }
 
         if (prevDemo.Released())
         {
@@ -189,7 +214,7 @@ internal class DemoState : GameState
     private void Reset()
     {
         RubedoEngine.SizeOfMeter = 1;
-        RubedoEngine.Instance.Camera.Z = 1 / 24f;
+        MainCamera.Z = 1 / 24f;
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.World.Clear();
         foreach (Entity ent in Entities)
@@ -267,14 +292,15 @@ internal class DemoState : GameState
         DebugText.Instance.DrawText(mouseScreen, 1f, mouse.ToNiceString(), 16, Renderer.Space.Screen);
         DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);*/
 
-        base.Draw(sb);
 
-        shapes.Begin(RubedoEngine.Instance.Camera);
+        shapes.Begin(MainCamera);
 
         for (int i = 0; i < RubedoEngine.Instance.World.bodies.Count; i++)
         {
-            //RubedoEngine.Instance.World.GetBody(i, out PhysicsBody body);
             PhysicsBody body = RubedoEngine.Instance.World.bodies[i];
+            if (!mainCamera.Intersects(in body.bounds))
+                continue; //shape not visible, don't draw!
+
             Color speedColor = Color.Black;
             if (colorVelocity)
             {
@@ -298,44 +324,53 @@ internal class DemoState : GameState
             {
                 case ShapeType.Circle:
                     Circle shape = (Circle)body.collider.shape;
-                    Vector2 vA = shape.transform.Position;
-                    Vector2 vB = shape.transform.LocalToWorldPosition(Vector2.UnitY * shape.radius);
+                    Vector2 vA = shape.Transform.Position;
+                    Vector2 vB = shape.Transform.LocalToWorldPosition(Vector2.UnitY * shape.radius);
 
-                    shapes.DrawCircleFill(shape.transform, shape.radius, speedColor);
+                    shapes.DrawCircleFill(shape.Transform, shape.radius, speedColor);
                     shapes.DrawLine(vA, vB, Color.White);
-                    shapes.DrawCircle(shape.transform, shape.radius, Color.White);
+                    shapes.DrawCircle(shape.Transform, shape.radius, Color.White);
                     break;
                 case ShapeType.Box:
                     Box box = (Box)body.collider.shape;
-                    shapes.DrawBoxFill(box.transform, box.width, box.height, speedColor);
-                    shapes.DrawBox(box.transform, box.width, box.height, Color.White);
+                    shapes.DrawBoxFill(box.Transform, box.width, box.height, speedColor);
+                    shapes.DrawBox(box.Transform, box.width, box.height, Color.White);
                     break;
                 case ShapeType.Capsule:
                     Capsule capsule = (Capsule)body.collider.shape;
                     capsule.TransformPoints();
-                    shapes.DrawCapsuleFill(capsule.transform, capsule.transRadius, capsule.transStart, capsule.transEnd, speedColor);
-                    shapes.DrawCapsule(capsule.transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White);
+                    shapes.DrawCapsuleFill(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, speedColor);
+                    shapes.DrawCapsule(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White);
                     break;
                 case ShapeType.Polygon:
                     Polygon polygon = (Polygon)body.collider.shape;
-                    shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.transform, speedColor);
-                    shapes.DrawPolygon(polygon.vertices, polygon.transform, Color.White);
+                    shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.Transform, speedColor);
+                    shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White);
                     break;
             }
             if (showVelocity)
-                shapes.DrawLine(body.compTransform.Position, body.compTransform.Position + body.LinearVelocity, Color.Aquamarine);
+                shapes.DrawLine(body.Entity.Transform.Position, body.Entity.Transform.Position + body.LinearVelocity, Color.Aquamarine);
+        }
+
+
+        shapes.End();
+        base.Draw(sb);
+
+        shapes.Begin(mainCamera);
+        foreach (IRenderable renderable in Renderables.ComponentsWithLayer((int)RenderLayer.Default))
+        {
+            RectF bounds = renderable.Bounds;
+            shapes.DrawBox(bounds.TopLeft, bounds.BottomRight, Color.White);
         }
 
         //foreach (Entity ent in Entities)
         //    shapes.DrawBox(ent.transform, 0.25f, 0.25f, Color.Yellow);
 
         RubedoEngine.Instance.World.DebugDraw(shapes);
-
-        /*RubedoEngine.Instance.Camera.GetExtents(out Vector2 min, out _);
+        shapes.End();
+        /*MainCamera.GetExtents(out Vector2 min, out _);
         shapes.DrawLine(mouse, new Vector2(mouse.X, min.Y), Color.DarkRed);
         shapes.DrawLine(mouse, new Vector2(min.X, mouse.Y), Color.DarkRed);*/
-
-        shapes.End();
         //draw text
         DebugText.Instance.Draw(sb);
     }
