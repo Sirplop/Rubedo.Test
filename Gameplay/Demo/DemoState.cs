@@ -46,7 +46,8 @@ internal class DemoState : GameState
         new Demo3(),
         new Demo4(),
         new Demo5(),
-        new Demo6()
+        new Demo6(),
+        new Demo7(),
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -69,6 +70,7 @@ internal class DemoState : GameState
     private double deltaTime = 0.0f;
 
     private Camera _camera;
+    private float _cameraLeft = 0.0f;
 
     public DemoState(StateManager sm) : base(sm)
     {
@@ -84,15 +86,14 @@ internal class DemoState : GameState
 
     public override void Enter()
     {
+        GUI.Root = new GUIRoot(new Point(800, 480), false);
+        Renderables.Add(GUI.Root);
         base.Enter();
-        _camera = new Camera(this, new PixelViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 500, 500), 0);
-        _camera.RenderLayers.Add((int)RenderLayer.Default);
-        _camera.RenderLayers.Add((int)RenderLayer.UI);
+        CreateCamera();
         debugRoot = new Vertical();
         debugRoot.Offset = new Vector2(30, 0);
         GUI.Root.AddChild(debugRoot);
 
-        _camera.Z = 1 / 24f;
         RubedoEngine.SizeOfMeter = 1;
         PhysicsWorld.ResetGravity();
 
@@ -110,6 +111,16 @@ internal class DemoState : GameState
         mouseVertical.AddChild(world);
         mouseVertical.AddChild(screen);
         GUI.Root.AddChild(mouseVertical);
+    }
+
+    private void CreateCamera()
+    {
+        if (_camera != null)
+            _camera.Dispose();
+        _camera = new Camera(this, new BestFitViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 800, 480), 0);
+        _camera.RenderLayers.Add((int)RenderLayer.Default);
+        _camera.RenderLayers.Add((int)RenderLayer.UI);
+        _camera.Zoom = 24;
     }
 
     public void CreateFPSDebugGUI()
@@ -170,6 +181,13 @@ internal class DemoState : GameState
             PhysicsWorld.drawBroadphase = !PhysicsWorld.drawBroadphase;
         if (InputManager.KeyPressed(Keys.F))
             fastPlace = !fastPlace;
+        if (InputManager.KeyPressed(Keys.OemCloseBrackets))
+        {
+            _cameraLeft += 0.1f;
+            if (_cameraLeft >= 1f)
+                _cameraLeft = 0f;
+            CreateCamera();
+        }
 
         if (cameraLeft.Pressed() || cameraLeft.Held())
             MainCamera.XY += new Vector2(-1, 0);
@@ -214,7 +232,7 @@ internal class DemoState : GameState
     private void Reset()
     {
         RubedoEngine.SizeOfMeter = 1;
-        MainCamera.Z = 1 / 24f;
+        _camera.Zoom = 24;
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.World.Clear();
         foreach (Entity ent in Entities)
@@ -277,9 +295,9 @@ internal class DemoState : GameState
     {
         if (mouseVertical != null && !mouseVertical.IsDestroyed)
         {
-            Vector2 mouse = InputManager.MouseWorldPosition();
-            Vector2 mouseScreen = InputManager.MouseScreenPosition();
-            mouseVertical.Offset = mouseScreen + new Vector2(15, 0);
+            Vector2 mouse = InputManager.MouseWorldPosition(MainCamera);
+            Vector2 mouseScreen = InputManager.MouseScreenPosition(MainCamera);
+            mouseVertical.Offset = GUI.Root.ScreenToUI(mouseScreen + new Vector2(15, 0));
 
             Label world = mouseVertical.Children[0] as Label;
             Label screen = mouseVertical.Children[1] as Label;
@@ -368,11 +386,18 @@ internal class DemoState : GameState
 
         RubedoEngine.Instance.World.DebugDraw(shapes);
         shapes.End();
+
+        GUI.Root?.DebugRender(shapes, mainCamera);
+
         /*MainCamera.GetExtents(out Vector2 min, out _);
         shapes.DrawLine(mouse, new Vector2(mouse.X, min.Y), Color.DarkRed);
         shapes.DrawLine(mouse, new Vector2(min.X, mouse.Y), Color.DarkRed);*/
         //draw text
+        MainCamera.SetViewport();
+        sb.Begin(MainCamera, SamplerState.PointClamp);
         DebugText.Instance.Draw(sb);
+        sb.End();
+        MainCamera.ResetViewport();
     }
 
     public class DebugTextEntry
