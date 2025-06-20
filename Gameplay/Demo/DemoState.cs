@@ -11,17 +11,16 @@ using Rubedo.Physics2D;
 using Rubedo.Physics2D.Dynamics.Shapes;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Math;
-using Rubedo.Rendering;
 using Rubedo.UI;
 using System;
 using System.Collections.Generic;
 using Rubedo.Physics2D.Common;
 using Rubedo.UI.Text;
 using FontStashSharp;
-using Rubedo.Internal.Assets;
 using Rubedo.UI.Layout;
 using Microsoft.Xna.Framework.Graphics;
 using Rubedo.Rendering.Viewports;
+using Rubedo.Graphics;
 
 namespace Test.Gameplay.Demo;
 
@@ -80,7 +79,7 @@ internal class DemoState : GameState
 
     public override void LoadContent()
     {
-        AssetManager.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
+        Assets.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
         base.LoadContent();
     }
 
@@ -105,7 +104,7 @@ internal class DemoState : GameState
     public void CreateMouseDebugGUI()
     {
         mouseVertical = new Vertical();
-        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFontSystem("fs-default");
         Label world = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         Label screen = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         mouseVertical.AddChild(world);
@@ -150,7 +149,7 @@ internal class DemoState : GameState
 
     private void AddDebugLabel(Vertical vert, Func<string> valueFunc)
     {
-        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFontSystem("fs-default");
         Label label = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         label.TightLineHeight = true;
         DebugTextEntry entry = new DebugTextEntry(label, valueFunc);

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Rubedo;
 using Rubedo.Graphics;
 using Rubedo.Input;
-using Rubedo.Internal.Assets;
 using Rubedo.Lib;
 using Rubedo.UI;
 using Rubedo.UI.Graphics;
@@ -32,7 +31,7 @@ internal class Demo5 : DemoBase
 
     public override void Initialize(DemoState state)
     {
-        AssetManager.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
+        Assets.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
         
         vert = new Vertical();
         Horizontal hor1 = new Horizontal();
@@ -64,7 +63,7 @@ internal class Demo5 : DemoBase
         vert.AddChild(hor3);
 
         GUI.Root.AddChild(vert);
-        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFontSystem("fs-default");
         text = new Label(font, "The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog adfasoqiw yraldh ald halwdha ldjahw dlawe havbx get872rq", Color.White, 18);
         text.MaxSize = new Vector2(64, -1);
         Button textButton = new Button();
@@ -75,7 +74,7 @@ internal class Demo5 : DemoBase
         textButton.OnReleased += TextButtonCallback;
         vert.AddChild(textButton);
 
-        image = new Image(AssetManager.LoadTexture("ball"), 320, 320);
+        image = new Image(Assets.LoadTexture("ball"), 320, 320);
         image.drawMode = Image.DrawMode.Tiled;
         image.Anchor = Anchor.BottomRight;
         image.uvOffset = new Vector2(0.5f, 0.5f);
@@ -90,10 +89,10 @@ internal class Demo5 : DemoBase
     private Button GetButton(int x)
     {
         Button button = new Button();
-        NineSliceImage image = new NineSliceImage(new Texture2DRegion(AssetManager.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
+        NineSliceImage image = new NineSliceImage(new Texture2DRegion(Assets.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
         image.Image.filled = true;
         images.Add(image);
-        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFontSystem("fs-default");
         Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
         text.MaxSize = new Vector2(64, -1);
         text.Anchor = Anchor.Center;
@@ -123,11 +122,11 @@ internal class Demo5 : DemoBase
     private Button GetButtonTile(int x)
     {
         Button button = new Button();
-        Image image = new Image(AssetManager.LoadTexture("ball"), 96, 96);
+        Image image = new Image(Assets.LoadTexture("ball"), 96, 96);
         image.drawMode = Image.DrawMode.Tiled;
         image.uvOffset = new Vector2(0.5f, 0.5f);
         tileImages.Add(image);
-        FontSystem font = AssetManager.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFontSystem("fs-default");
         Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
         text.MaxSize = new Vector2(64, -1);
         text.Anchor = Anchor.Center;
