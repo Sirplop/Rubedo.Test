@@ -2,7 +2,6 @@
 using Rubedo;
 using Rubedo.Components;
 using Rubedo.Input;
-using Rubedo.Internal.Assets;
 using Rubedo.Object;
 using System;
 

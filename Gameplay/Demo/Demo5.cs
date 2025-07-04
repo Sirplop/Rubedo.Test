@@ -24,6 +24,8 @@ internal class Demo5 : DemoBase
     List<Image> tileImages = new List<Image>();
     Image image;
 
+    Horizontal horz;
+
     public Demo5()
     {
         description = "Button Test";
@@ -34,6 +36,7 @@ internal class Demo5 : DemoBase
         Assets.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
         
         vert = new Vertical();
+        vert.Offset = new Vector2(0, 30);
         Horizontal hor1 = new Horizontal();
         Horizontal hor2 = new Horizontal();
         Horizontal hor3 = new Horizontal();
@@ -58,21 +61,33 @@ internal class Demo5 : DemoBase
         vert.paddingLeft = 5;
         vert.paddingTop = 5;
 
-        vert.AddChild(hor1);
-        vert.AddChild(hor2);
-        vert.AddChild(hor3);
+        //vert.AddChild(hor1);
+        //vert.AddChild(hor2);
+        //vert.AddChild(hor3);
 
         GUI.Root.AddChild(vert);
+
+        horz = new Horizontal();
+        horz.Anchor = Anchor.Left;
+        GUI.Root.AddChild(horz);
+
+        Image spaceTest = new Image(Assets.LoadTexture("ball"));
+        spaceTest.Anchor = Anchor.Left;
+        horz.AddChild(spaceTest);
+        spaceTest = new Image(Assets.LoadTexture("ball"));
+        spaceTest.Anchor = Anchor.Left;
+        horz.AddChild(spaceTest);
+
         FontSystem font = Assets.GetFontSystem("fs-default");
         text = new Label(font, "The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog adfasoqiw yraldh ald halwdha ldjahw dlawe havbx get872rq", Color.White, 18);
         text.MaxSize = new Vector2(64, -1);
         Button textButton = new Button();
-        //textButton.Anchor = Anchor.Center;
+        textButton.Anchor = Anchor.Left;
         //textButton.Offset = new Vector2(0, 100);
         textButton.AddChild(new SelectableTintSet(text, 1f));
         textButton.AddChild(text);
         textButton.OnReleased += TextButtonCallback;
-        vert.AddChild(textButton);
+        horz.AddChild(textButton);
 
         image = new Image(Assets.LoadTexture("ball"), 320, 320);
         image.drawMode = Image.DrawMode.Tiled;
@@ -186,6 +201,39 @@ internal class Demo5 : DemoBase
         if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
         {
             pauseTextScale = !pauseTextScale;
+        }
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.V))
+        {
+            switch (horz.Anchor)
+            {
+                case Anchor.TopLeft:
+                    horz.Anchor = Anchor.Top;
+                    break;
+                case Anchor.Top:
+                    horz.Anchor = Anchor.TopRight;
+                    break;
+                case Anchor.TopRight:
+                    horz.Anchor = Anchor.Left;
+                    break;
+                case Anchor.Left:
+                    horz.Anchor = Anchor.Center;
+                    break;
+                case Anchor.Center:
+                    horz.Anchor = Anchor.Right;
+                    break;
+                case Anchor.Right:
+                    horz.Anchor = Anchor.BottomLeft;
+                    break;
+                case Anchor.BottomLeft:
+                    horz.Anchor = Anchor.Bottom;
+                    break;
+                case Anchor.Bottom:
+                    horz.Anchor = Anchor.BottomRight;
+                    break;
+                case Anchor.BottomRight:
+                    horz.Anchor = Anchor.TopLeft;
+                    break;
+            }
         }
     }
 }

@@ -26,11 +26,9 @@ public class DemoGame : Rubedo.RubedoEngine
         base.Update(gameTime);
     }
 
-    protected Texture2D LoadTextureThing(string path)
+    protected override void Draw(GameTime gameTime)
     {
-        using (FileStream fs = new FileStream(path, FileMode.Open))
-        {
-            return Texture2D.FromStream(GraphicsDevice, fs);
-        }
+        GraphicsDevice.Clear(Color.Black);
+        base.Draw(gameTime);
     }
 }

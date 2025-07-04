@@ -19,7 +19,7 @@ using Rubedo.UI.Text;
 using FontStashSharp;
 using Rubedo.UI.Layout;
 using Microsoft.Xna.Framework.Graphics;
-using Rubedo.Rendering.Viewports;
+using Rubedo.Graphics.Viewports;
 using Rubedo.Graphics;
 
 namespace Test.Gameplay.Demo;
@@ -62,7 +62,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
     private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
-    private int selectedDemo = 0;
+    private int selectedDemo = 4;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
@@ -116,7 +116,7 @@ internal class DemoState : GameState
     {
         if (_camera != null)
             _camera.Dispose();
-        _camera = new Camera(this, new BestFitViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 800, 480), 0);
+        _camera = new Camera(this, new DefaultViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window), 0);
         _camera.RenderLayers.Add((int)RenderLayer.Default);
         _camera.RenderLayers.Add((int)RenderLayer.UI);
         _camera.Zoom = 24;
