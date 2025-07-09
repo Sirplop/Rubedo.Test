@@ -21,6 +21,7 @@ using Rubedo.UI.Layout;
 using Microsoft.Xna.Framework.Graphics;
 using Rubedo.Graphics.Viewports;
 using Rubedo.Graphics;
+using Rubedo.Graphics.Sprites;
 
 namespace Test.Gameplay.Demo;
 
@@ -62,7 +63,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
     private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
-    private int selectedDemo = 4;
+    private int selectedDemo = 5;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
@@ -116,10 +117,10 @@ internal class DemoState : GameState
     {
         if (_camera != null)
             _camera.Dispose();
-        _camera = new Camera(this, new DefaultViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window), 0);
+        _camera = new Camera(this, new PixelViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 640, 640), 0);
         _camera.RenderLayers.Add((int)RenderLayer.Default);
         _camera.RenderLayers.Add((int)RenderLayer.UI);
-        _camera.Zoom = 24;
+        _camera.Zoom = 24f;
     }
 
     public void CreateFPSDebugGUI()
@@ -147,7 +148,7 @@ internal class DemoState : GameState
         AddDebugLabel(debugRoot, () => $"(F) Fast Place: {(fastPlace ? "On" : "Off")}");
     }
 
-    private void AddDebugLabel(Vertical vert, Func<string> valueFunc)
+    public void AddDebugLabel(Vertical vert, Func<string> valueFunc)
     {
         FontSystem font = Assets.GetFontSystem("fs-default");
         Label label = new Label(font, string.Empty, Color.AntiqueWhite, 18);
@@ -373,20 +374,17 @@ internal class DemoState : GameState
         shapes.End();
         base.Draw(sb);
 
-        shapes.Begin(mainCamera);
+        /*shapes.Begin(mainCamera);
         foreach (IRenderable renderable in Renderables.ComponentsWithLayer((int)RenderLayer.Default))
         {
             RectF bounds = renderable.Bounds;
             shapes.DrawBox(bounds.TopLeft, bounds.BottomRight, Color.White);
         }
 
-        //foreach (Entity ent in Entities)
-        //    shapes.DrawBox(ent.transform, 0.25f, 0.25f, Color.Yellow);
-
         RubedoEngine.Instance.World.DebugDraw(shapes);
-        shapes.End();
+        shapes.End();*/
 
-        GUI.Root?.DebugRender(shapes, mainCamera);
+        //GUI.Root?.DebugRender(shapes, mainCamera);
 
         /*MainCamera.GetExtents(out Vector2 min, out _);
         shapes.DrawLine(mouse, new Vector2(mouse.X, min.Y), Color.DarkRed);

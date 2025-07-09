@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Rubedo;
 using Rubedo.Components;
+using Rubedo.Graphics.Sprites;
 using Rubedo.Input;
 using Rubedo.Object;
 using System;
@@ -13,7 +14,7 @@ namespace Test.Gameplay.Demo;
 internal class Demo6 : DemoBase
 {
     Entity mouseSprite;
-    Sprite sprite;
+    AnimatedSprite sprite;
 
     public Demo6()
     {
@@ -25,14 +26,18 @@ internal class Demo6 : DemoBase
         state.CreateDemoDebugGUI();
 
         mouseSprite = new Entity();
-        sprite = new Sprite("ball", 0);
-        mouseSprite.Transform.LocalScale = new Vector2(state.MainCamera.Z);
-        sprite.Color = Color.Yellow;
+        sprite = new AnimatedSprite("jotaro\\jotaro", 5, Color.White);
+        //sprite.Controller.IsPingPong = true;
+        sprite.Pivot = new Vector2(0.5f, 0f);
+        sprite.Controller.Speed = 0.5f;
+        //sprite.Controller.Pause();
+        mouseSprite.Transform.LocalScale = new Vector2(state.MainCamera.Z * 4);
         mouseSprite.Add(sprite);
         state.Add(mouseSprite);
-
+        /*
         Entity overlap = new Entity();
         Sprite lowerSprite = new Sprite("ball", 1);
+        lowerSprite.Pivot = new Vector2(0.25f, 0.25f);
         overlap.Transform.LocalScale = new Vector2(state.MainCamera.Z);
         overlap.Add(lowerSprite);
         state.Add(overlap);
@@ -46,6 +51,8 @@ internal class Demo6 : DemoBase
         parallaxEnt.Add(new Sprite("ball", 4, Color.Gray))
                    .Add(new Parallax(state.MainCamera, -0.5f, Parallax.ParallaxType.Horizontal));
         state.Add(parallaxEnt);
+        */
+        state.AddDebugLabel(state.debugRoot, () => $"Frame Index: {sprite.Controller.CurrentFrame}");
     }
 
     public override void HandleInput(DemoState state)
@@ -53,6 +60,12 @@ internal class Demo6 : DemoBase
         if (InputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             sprite.LayerDepth = sprite.LayerDepth == 2 ? 0 : 2;
+        }
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
+        {
+            sprite.Controller.Unpause(true);
+            sprite.ForceUpdateTexture();
+            sprite.Controller.Pause();
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Rubedo;
-using Rubedo.Graphics;
+using Rubedo.Graphics.Sprites;
 using Rubedo.Input;
 using Rubedo.Lib;
 using Rubedo.UI;
@@ -104,7 +104,7 @@ internal class Demo5 : DemoBase
     private Button GetButton(int x)
     {
         Button button = new Button();
-        NineSliceImage image = new NineSliceImage(new Texture2DRegion(Assets.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
+        NineSliceImage image = new NineSliceImage(new TextureRegion2D(Assets.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
         image.Image.filled = true;
         images.Add(image);
         FontSystem font = Assets.GetFontSystem("fs-default");
