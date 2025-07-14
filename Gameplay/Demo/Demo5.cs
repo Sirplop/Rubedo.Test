@@ -61,14 +61,14 @@ internal class Demo5 : DemoBase
         vert.paddingLeft = 5;
         vert.paddingTop = 5;
 
-        //vert.AddChild(hor1);
-        //vert.AddChild(hor2);
-        //vert.AddChild(hor3);
+        vert.AddChild(hor1);
+        vert.AddChild(hor2);
+        vert.AddChild(hor3);
 
         GUI.Root.AddChild(vert);
 
         horz = new Horizontal();
-        horz.Anchor = Anchor.Left;
+        horz.Anchor = Anchor.BottomLeft;
         GUI.Root.AddChild(horz);
 
         Image spaceTest = new Image(Assets.LoadTexture("ball"));
@@ -87,7 +87,7 @@ internal class Demo5 : DemoBase
         textButton.AddChild(new SelectableTintSet(text, 1f));
         textButton.AddChild(text);
         textButton.OnReleased += TextButtonCallback;
-        horz.AddChild(textButton);
+        vert.AddChild(textButton);
 
         image = new Image(Assets.LoadTexture("ball"), 320, 320);
         image.drawMode = Image.DrawMode.Tiled;
@@ -190,7 +190,7 @@ internal class Demo5 : DemoBase
 
         Vector2 mouse = InputManager.MouseScreenPosition();
 
-        image.uvOffset = new Vector2(mouse.X / 64f, mouse.Y / 64f);
+        image.uvOffset = new Vector2(-mouse.X / 64f, -mouse.Y / 64f);
     }
     public override void HandleInput(DemoState state) 
     { 
