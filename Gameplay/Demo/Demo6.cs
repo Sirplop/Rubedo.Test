@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Rubedo;
+using Rubedo.Audio;
 using Rubedo.Components;
 using Rubedo.Graphics.Sprites;
 using Rubedo.Input;
@@ -15,6 +16,10 @@ internal class Demo6 : DemoBase
 {
     Entity mouseSprite;
     AnimatedSprite sprite;
+
+    SoundPlayer player1;
+    SoundPlayer player2;
+    SoundPlayer player3;
 
     public Demo6()
     {
@@ -53,6 +58,21 @@ internal class Demo6 : DemoBase
         state.Add(parallaxEnt);
         */
         state.AddDebugLabel(state.debugRoot, () => $"Frame Index: {sprite.Controller.CurrentFrame}");
+
+        player1 = new SoundPlayer("test1", 1, RubedoEngine.Audio);
+        player1.loop = true;
+        player1.volume = 1f;
+        player1.Play();
+        player2 = new SoundPlayer("test2", 1, RubedoEngine.Audio);
+        player2.loop = true;
+        player2.volume = 0.5f;
+        player2.Play();
+
+        player3 = new SoundPlayer("test3", 1, RubedoEngine.Audio);
+        player3.loop = true;
+        player3.volume = 1f;
+        AudioInstance instance = player3.Play();
+        instance.SetPause(true);
     }
 
     public override void HandleInput(DemoState state)
@@ -63,9 +83,7 @@ internal class Demo6 : DemoBase
         }
         if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
         {
-            sprite.Controller.Unpause(true);
-            sprite.ForceUpdateTexture();
-            sprite.Controller.Pause();
+            RubedoEngine.Audio.audioGroups["effects"].FlipVolume();
         }
     }
 
