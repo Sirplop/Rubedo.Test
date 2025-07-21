@@ -48,6 +48,7 @@ internal class DemoState : GameState
         new Demo5(),
         new Demo6(),
         new Demo7(),
+        new Demo8(),
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -63,7 +64,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
     private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
-    private int selectedDemo = 5;
+    private int selectedDemo = 7;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
