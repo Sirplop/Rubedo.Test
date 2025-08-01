@@ -22,6 +22,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Rubedo.Graphics.Viewports;
 using Rubedo.Graphics;
 using Rubedo.Graphics.Sprites;
+using Rubedo.Audio;
+using Rubedo.Lib.Coroutines;
 
 namespace Test.Gameplay.Demo;
 
@@ -65,7 +67,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
     private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
-    private int selectedDemo = 8;
+    private int selectedDemo = 5;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
@@ -245,6 +247,9 @@ internal class DemoState : GameState
         GUI.Root.DestroyChildren();
         debugRoot.DestroyChildren();
         GUI.Root.AddChild(debugRoot);
+
+        Coroutine.StopAllCoroutines();
+        RubedoEngine.Audio.StopAll();
     }
 
     public PhysicsBody MakeBody(Entity entity, PhysicsMaterial material, Collider collider, bool isStatic)

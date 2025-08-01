@@ -20,6 +20,7 @@ internal class Demo9 : DemoBase
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
         state.AddDebugLabel(state.debugRoot, () => "Victory: "+victory);
+        victory = 0;
 
         for (int i = 0; i < 100; i++)
         {
