@@ -82,7 +82,7 @@ internal class Demo2 : DemoBase
             //Polygon polygon = new Polygon(0.5f, 0.5f);
             //shapes.MakeBody(polygon, material, inputManager.MouseWorldPosition(), 45, false);
             Entity entity = new Entity(InputManager.MouseWorldPosition());
-            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
+            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, false, 3);
             state.MakeBody(entity, material, comp, false);
         }
         if (InputManager.MousePressed(InputManager.MouseButtons.Middle))

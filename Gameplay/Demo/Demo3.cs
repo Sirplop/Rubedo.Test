@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Rubedo.Physics2D.Dynamics.Shapes;
 using Rubedo.Lib;
 using Rubedo.Input;
+using Rubedo.Physics2D.Common;
 
 namespace Test.Gameplay.Demo;
 
@@ -92,7 +93,7 @@ internal class Demo3 : DemoBase
             float y = Random.Range(0.5f, 2f);
 
             Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
-            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
+            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, false, 3);
             state.MakeBody(entity, material, comp, false);
         }
         if (InputManager.MousePressed(InputManager.MouseButtons.Middle))

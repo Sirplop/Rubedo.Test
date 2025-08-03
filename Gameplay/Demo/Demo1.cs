@@ -85,7 +85,7 @@ internal class Demo1 : DemoBase
             float y = Random.Range(0.5f, 2f);
 
             Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
-            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, 3);
+            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, false, 3);
             state.MakeBody(entity, material, comp, false);
         }
         if (InputManager.MousePressed(InputManager.MouseButtons.Middle))
@@ -122,7 +122,7 @@ internal class Demo1 : DemoBase
 
             //magnificent polygon
             poly = new Entity(new Vector2(0, 0), 45, new Vector2(5f, 10f));
-            comp = Collider.CreateUnitShape(ShapeType.Polygon, 3);
+            comp = Collider.CreateUnitShape(ShapeType.Polygon, false, 3);
             state.MakeBody(poly, material, comp, true);
 
             //magnificent capsule

@@ -67,7 +67,7 @@ internal class DemoState : GameState
     private readonly KeyCondition cameraRotateCCW = new KeyCondition(Keys.Y);
     private readonly KeyCondition cameraReset = new KeyCondition(Keys.R);
 
-    private int selectedDemo = 5;
+    private int selectedDemo = 0;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
 
@@ -148,7 +148,6 @@ internal class DemoState : GameState
         AddDebugLabel(debugRoot, () => $"(A) AABBs visible: {(showAABB ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(O) Contacts visible: {(PhysicsWorld.showContacts ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(D) Draw Broadphase: {(PhysicsWorld.drawBroadphase ? "Yes" : "No")}");
-        AddDebugLabel(debugRoot, () => $"(B) Brute force: {(PhysicsWorld.bruteForce ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(F) Fast Place: {(fastPlace ? "On" : "Off")}");
     }
 
@@ -179,8 +178,6 @@ internal class DemoState : GameState
             showAABB = !showAABB;
         if (InputManager.KeyPressed(Keys.O))
             PhysicsWorld.showContacts = !PhysicsWorld.showContacts;
-        if (InputManager.KeyPressed(Keys.B))
-            PhysicsWorld.bruteForce = !PhysicsWorld.bruteForce;
         if (InputManager.KeyPressed(Keys.D))
             PhysicsWorld.drawBroadphase = !PhysicsWorld.drawBroadphase;
         if (InputManager.KeyPressed(Keys.F))
