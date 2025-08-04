@@ -52,6 +52,7 @@ internal class DemoState : GameState
         new Demo7(),
         new Demo8(),
         new Demo9(),
+        new Demo10(),
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -147,6 +148,7 @@ internal class DemoState : GameState
         AddDebugLabel(debugRoot, () => $"(S) Show velocity: {(showVelocity ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(A) AABBs visible: {(showAABB ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(O) Contacts visible: {(PhysicsWorld.showContacts ? "Yes" : "No")}");
+        AddDebugLabel(debugRoot, () => $"(M) Multithread solver: {(PhysicsWorld.multithreadSolver ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(D) Draw Broadphase: {(PhysicsWorld.drawBroadphase ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(F) Fast Place: {(fastPlace ? "On" : "Off")}");
     }
@@ -168,8 +170,6 @@ internal class DemoState : GameState
 
         if (InputManager.KeyPressed(Keys.Z))
             RubedoEngine.Instance.physicsOn = !RubedoEngine.Instance.physicsOn;
-        if (InputManager.KeyPressed(Keys.X))
-            RubedoEngine.Instance.stepPhysics = true;
         if (InputManager.KeyPressed(Keys.S))
             showVelocity = !showVelocity;
         if (InputManager.KeyPressed(Keys.C))
@@ -178,6 +178,8 @@ internal class DemoState : GameState
             showAABB = !showAABB;
         if (InputManager.KeyPressed(Keys.O))
             PhysicsWorld.showContacts = !PhysicsWorld.showContacts;
+        if (InputManager.KeyPressed(Keys.M))
+            PhysicsWorld.multithreadSolver = !PhysicsWorld.multithreadSolver;
         if (InputManager.KeyPressed(Keys.D))
             PhysicsWorld.drawBroadphase = !PhysicsWorld.drawBroadphase;
         if (InputManager.KeyPressed(Keys.F))

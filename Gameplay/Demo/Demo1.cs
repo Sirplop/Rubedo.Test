@@ -5,6 +5,7 @@ using Rubedo.Input;
 using Rubedo.Lib;
 using Rubedo.Object;
 using Rubedo.Physics2D;
+using Rubedo.Physics2D.Collision;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Dynamics.Shapes;
 
@@ -104,7 +105,7 @@ internal class Demo1 : DemoBase
     {
         const float width = 33.3f;
         const float height = 20f;
-        PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0, 0, 0.5f);
+        PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.5f, 0, 0.5f);
         Collider comp;
 
         if (!layout)
@@ -118,6 +119,21 @@ internal class Demo1 : DemoBase
             //magnificent orb
             orb = new Entity(new Vector2(-width / 4, 0));
             comp = Collider.CreateCircle(width * 0.1f);
+            /*comp.isTrigger = true;
+
+            comp.OnTriggerEnter += (PhysicsBody sender, PhysicsBody other, Manifold m) =>
+            {
+                Log.Info("I've been touched! Eep!");
+            }; 
+            comp.OnTriggerStay += (PhysicsBody sender, PhysicsBody other, Manifold m) =>
+            {
+                Log.Info("Hehe, that tickles!");
+            };
+            comp.OnTriggerExit += (PhysicsBody sender, PhysicsBody other) =>
+            {
+                Log.Info("Aww, don't go!");
+            };*/
+
             state.MakeBody(orb, material, comp, true);
 
             //magnificent polygon
