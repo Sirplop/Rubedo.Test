@@ -1,13 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Particles.Particles.Modifiers;
-using MonoGame.Particles.Particles.Origins;
-using MonoGame.Particles.Particles;
 using Rubedo;
-using Rubedo.Physics2D.Dynamics.Shapes;
 using System;
 using Rubedo.Object;
-using Rubedo.Graphics;
+using Rubedo.Graphics.Particles;
+using Rubedo.Graphics.Particles.Modifiers;
+using Rubedo.Graphics.Particles.Origins;
 
 namespace Test.Gameplay.Demo;
 
@@ -128,8 +126,8 @@ internal class Demo10 : DemoBase
         emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.LightBlue, Color.Orange, Color.Transparent));
         emitter.AddBirthModifier(new ScaleBirthModifier(new Interval(2, 15)));
         emitter.AddModifier(new ActionModifier(
-            (e, p) => p.Transform.Position = e.Transform.Position + new Vector2((float)Math.Sin(p.Age / p.MaxAge * 6.28) * 150, p.Transform.Position.Y - e.Transform.Position.Y)
-            ));
+            (e, p) => p.Transform.Position = e.Transform.Position + new Vector2((float)Math.Sin(p.Age / p.MaxAge * 6.28) * 150, 
+            p.Transform.Position.Y - e.Transform.Position.Y)));
         emitter.Origin = new RectangleOrigin(300, 200);
         emitter.Texture = pixel;
         emitter.Start();

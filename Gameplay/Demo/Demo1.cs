@@ -4,8 +4,8 @@ using Rubedo;
 using Rubedo.Input;
 using Rubedo.Lib;
 using Rubedo.Object;
-using Rubedo.Physics2D;
 using Rubedo.Physics2D.Collision;
+using Rubedo.Physics2D.Common;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Dynamics.Shapes;
 

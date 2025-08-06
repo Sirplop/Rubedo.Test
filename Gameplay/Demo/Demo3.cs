@@ -1,6 +1,5 @@
 ﻿using Rubedo.Object;
 using Rubedo.Physics2D.Dynamics;
-using Rubedo.Physics2D;
 using Rubedo;
 using Microsoft.Xna.Framework;
 using Rubedo.Physics2D.Dynamics.Shapes;

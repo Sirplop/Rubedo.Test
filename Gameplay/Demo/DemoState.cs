@@ -7,7 +7,6 @@ using Rubedo.Input.Conditions;
 using Rubedo.Lib;
 using Rubedo.Lib.Extensions;
 using Rubedo.Object;
-using Rubedo.Physics2D;
 using Rubedo.Physics2D.Dynamics.Shapes;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Math;
@@ -36,6 +35,8 @@ internal class DemoState : GameState
     public static bool showVelocity = false;
     public static bool showAABB = false;
     public static bool fastPlace = false;
+    public static bool drawBodies = true;
+    public static bool deleteBodyIfTooFar = true;
 
     public Vertical debugRoot;
 
@@ -53,6 +54,7 @@ internal class DemoState : GameState
         new Demo8(),
         new Demo9(),
         new Demo10(),
+        new Demo11(),
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -234,6 +236,8 @@ internal class DemoState : GameState
 
     private void Reset()
     {
+        drawBodies = true;
+        deleteBodyIfTooFar = true;
         RubedoEngine.SizeOfMeter = 1;
         _camera.Zoom = 24;
         PhysicsWorld.ResetGravity();
@@ -268,11 +272,16 @@ internal class DemoState : GameState
         deltaTime += (Time.RawDeltaTime - deltaTime) * 0.1f;
         base.Update();
         demos[selectedDemo].Update(this);
-        DeleteIfTooFar();
         for (int i = 0; i < debugText.Count; i++)
         {
             debugText[i].Update();
         }
+    }
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        if (deleteBodyIfTooFar)
+            DeleteIfTooFar();
     }
     private void DeleteIfTooFar()
     {
@@ -290,9 +299,6 @@ internal class DemoState : GameState
             if (bounds.max.Y < -50)
             {
                 RubedoEngine.Instance.World.RemoveBody(body);
-                //if (!RubedoEngine.Instance.World.RemoveBody(body))
-                //    throw new System.Exception("FUQ");
-                //body.Entity.State.Remove(body.Entity);
             }
         }
     }
@@ -317,78 +323,79 @@ internal class DemoState : GameState
         DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);*/
 
 
-        shapes.Begin(MainCamera);
-
-        for (int i = 0; i < RubedoEngine.Instance.World.bodies.Count; i++)
+        if (drawBodies)
         {
-            PhysicsBody body = RubedoEngine.Instance.World.bodies[i];
-            if (!mainCamera.Intersects(in body.bounds))
-                continue; //shape not visible, don't draw!
-
-            Color speedColor = Color.Black;
-            if (colorVelocity)
+            shapes.Begin(MainCamera);
+            for (int i = 0; i < RubedoEngine.Instance.World.bodies.Count; i++)
             {
-                if (body.isStatic)
-                    speedColor = new Color(50, 50, 50);
-                else
+                PhysicsBody body = RubedoEngine.Instance.World.bodies[i];
+                if (!mainCamera.Intersects(in body.bounds))
+                    continue; //shape not visible, don't draw!
+
+                Color speedColor = Color.Black;
+                if (colorVelocity)
                 {
-                    float val = body.LinearVelocity.Length() * 20f;
-                    float vel = 220 - System.MathF.Min(val, 220) % 360;
-                    ColorExtensions.HsvToRgb(vel, 1, 1, out int r, out int g, out int b);
-                    speedColor = new Color(r, g, b);
+                    if (body.isStatic)
+                        speedColor = new Color(50, 50, 50);
+                    else
+                    {
+                        float val = body.LinearVelocity.Length() * 20f;
+                        float vel = 220 - System.MathF.Min(val, 220) % 360;
+                        ColorExtensions.HsvToRgb(vel, 1, 1, out int r, out int g, out int b);
+                        speedColor = new Color(r, g, b);
+                    }
                 }
-            }
-            if (showAABB)
-            {
-                AABB bounds = body.bounds;
-                shapes.DrawBox(bounds.min, bounds.max, Color.Green);
+                if (showAABB)
+                {
+                    AABB bounds = body.bounds;
+                    shapes.DrawBox(bounds.min, bounds.max, Color.Green);
+                }
+
+                switch (body.collider.shape.type)
+                {
+                    case ShapeType.Circle:
+                        Circle shape = (Circle)body.collider.shape;
+                        Vector2 vA = shape.Transform.Position;
+                        Vector2 vB = shape.Transform.LocalToWorldPosition(Vector2.UnitY * shape.radius);
+
+                        shapes.DrawCircleFill(shape.Transform, shape.radius, speedColor);
+                        shapes.DrawLine(vA, vB, Color.White);
+                        shapes.DrawCircle(shape.Transform, shape.radius, Color.White);
+                        break;
+                    case ShapeType.Box:
+                        Box box = (Box)body.collider.shape;
+                        shapes.DrawBoxFill(box.Transform, box.width, box.height, speedColor);
+                        shapes.DrawBox(box.Transform, box.width, box.height, Color.White);
+                        break;
+                    case ShapeType.Capsule:
+                        Capsule capsule = (Capsule)body.collider.shape;
+                        capsule.TransformPoints();
+                        shapes.DrawCapsuleFill(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, speedColor);
+                        shapes.DrawCapsule(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White);
+                        break;
+                    case ShapeType.Polygon:
+                        Polygon polygon = (Polygon)body.collider.shape;
+                        shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.Transform, speedColor);
+                        shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White);
+                        break;
+                }
+                if (showVelocity)
+                    shapes.DrawLine(body.Entity.Transform.Position, body.Entity.Transform.Position + body.LinearVelocity, Color.Aquamarine);
             }
 
-            switch (body.collider.shape.type)
-            {
-                case ShapeType.Circle:
-                    Circle shape = (Circle)body.collider.shape;
-                    Vector2 vA = shape.Transform.Position;
-                    Vector2 vB = shape.Transform.LocalToWorldPosition(Vector2.UnitY * shape.radius);
-
-                    shapes.DrawCircleFill(shape.Transform, shape.radius, speedColor);
-                    shapes.DrawLine(vA, vB, Color.White);
-                    shapes.DrawCircle(shape.Transform, shape.radius, Color.White);
-                    break;
-                case ShapeType.Box:
-                    Box box = (Box)body.collider.shape;
-                    shapes.DrawBoxFill(box.Transform, box.width, box.height, speedColor);
-                    shapes.DrawBox(box.Transform, box.width, box.height, Color.White);
-                    break;
-                case ShapeType.Capsule:
-                    Capsule capsule = (Capsule)body.collider.shape;
-                    capsule.TransformPoints();
-                    shapes.DrawCapsuleFill(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, speedColor);
-                    shapes.DrawCapsule(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White);
-                    break;
-                case ShapeType.Polygon:
-                    Polygon polygon = (Polygon)body.collider.shape;
-                    shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.Transform, speedColor);
-                    shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White);
-                    break;
-            }
-            if (showVelocity)
-                shapes.DrawLine(body.Entity.Transform.Position, body.Entity.Transform.Position + body.LinearVelocity, Color.Aquamarine);
+            shapes.End();
         }
-
-
-        shapes.End();
         base.Draw(sb);
 
-        /*shapes.Begin(mainCamera);
+        /*
         foreach (IRenderable renderable in Renderables.ComponentsWithLayer((int)RenderLayer.Default))
         {
             RectF bounds = renderable.Bounds;
             shapes.DrawBox(bounds.TopLeft, bounds.BottomRight, Color.White);
-        }
-
+        }*/
+        shapes.Begin(mainCamera);
         RubedoEngine.Instance.World.DebugDraw(shapes);
-        shapes.End();*/
+        shapes.End();
 
         //GUI.Root?.DebugRender(shapes, mainCamera);
 
