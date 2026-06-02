@@ -10,7 +10,6 @@ using Rubedo.Graphics.Particles;
 using Rubedo.Physics2D.Common;
 using Rubedo.Graphics.Particles.Modifiers;
 using Rubedo.Graphics.Particles.Origins;
-using Rubedo.Lib.Tweening;
 using Rubedo.Components;
 using System.Linq;
 
@@ -25,9 +24,9 @@ internal class Demo11 : DemoBase
     private Texture2D smallPixel;
     private Texture2D fadedcircle;
     private Circle circle = new Circle(8);
-    private Circle circle2 = new Circle(3);
+    private Circle circle2 = new Circle(2);
 
-    PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0, 0, 0.5f);
+    PhysicsMaterial material = new PhysicsMaterial(1, 0.5f, 0.25f, 0, 0.5f);
 
     public Demo11()
     {
@@ -90,42 +89,50 @@ internal class Demo11 : DemoBase
         sprite = new Sprite(veryWide, -1, Color.Green);
         entity.Add(sprite);
 
-        Shape boxShape = new Box(20, 20);
+        Shape boxShape = new Box(16, 16);
 
         entity = new Entity(new Vector2(0, 500));
-        PhysicsParticleEmitter emitter2 = new PhysicsParticleEmitter("Boxes", boxShape, material, new Interval(50, 150), new Interval(-Math.PI, 0), 5.0f, new Interval(4000, 4000), true, 2);
-        emitter2.AddModifier(new ColorRangeModifier(Color.LightBlue, Color.Purple));
-        emitter2.Origin = new PointOrigin();
-        emitter2.OnCollision += Emitter2_OnCollision;
-        emitter2.GravityScale = 50;
-        emitter2.Texture = pixel;
-        emitter2.Start();
-
-        entity.Add(emitter2);
+        PhysicsParticleEmitter emitter = new PhysicsParticleBuilder("Boxes", 5.0f, false)
+            .SetShape(boxShape)
+            .SetMaterial(material)
+            .SetPhysicsLayer(2)
+            .SetIsTriggerCollider(true)
+            .SetSpeed(50, 150)
+            .SetDirection(-Math.PI, 0)
+            .SetMaxAge(4000, 4000)
+            .SetOrigin(new PointOrigin())
+            .SetGravity(50)
+            .SetTexture(pixel, 0)
+            .AddModifier(new ColorRangeModifier(Color.LightBlue, Color.Purple))
+            .AddCollisionEvent(Emitter2_OnCollision)
+            .BuildAndStart();
+        entity.Add(emitter);
         state.Add(entity);
     }
 
     private ContactAction Emitter2_OnCollision(PhysicsParticle sender, PhysicsBody other, Manifold m)
     {
-        Explode(sender.Transform.Position);
+        Explode(sender.Transform.Position, m.Normal);
         //delete the particle
         return ContactAction.DESTROY;
     }
-    private void Explode(Vector2 pos2)
+    private void Explode(Vector2 pos2, Vector2 normal)
     {
         Entity entity = new Entity(pos2);
 
         PhysicsParticleEmitter emitter = new PhysicsParticleEmitter("Explosion", circle, material, new Interval(0, 150), new Interval(-Math.PI, Math.PI), 10, new Interval(500, 1000), false, 2);
 
-        emitter.AddModifier(new ColorRangeModifier(Color.Orange, Color.Transparent));
-        emitter.Origin = new PointOrigin();
+        emitter.AddModifier(new ColorRangeModifier(Color.White, Color.Orange, Color.Transparent));
+        emitter.Origin = new CircleOrigin(2);
         emitter.GravityScale = 0;
         emitter.LinearDamping = 0.04f;
         emitter.Texture = fadedcircle;
 
         entity.Add(emitter);
 
-        PhysicsParticleEmitter emitter2 = new PhysicsParticleEmitter("Debris", circle2, material, new Interval(0, 200), new Interval(-Math.PI, Math.PI), 15.0f, new Interval(1000, 2000), false, 2);
+        float angleFromZero = Rubedo.Lib.MathV.AngleBetween(in normal, Vector2.UnitY) + MathHelper.PiOver2;
+
+        PhysicsParticleEmitter emitter2 = new PhysicsParticleEmitter("Debris", circle2, material, new Interval(0, 200), new Interval(angleFromZero - MathHelper.PiOver2, angleFromZero + MathHelper.PiOver2), 15.0f, new Interval(1000, 2000), false, 2);
         emitter2.AddModifier(new AlphaFadeModifier());
         emitter2.AddModifier(new ColorRangeModifier(Color.LightBlue, Color.Purple));
         emitter2.Origin = new PointOrigin();
@@ -139,8 +146,8 @@ internal class Demo11 : DemoBase
         entity.Add(destroyer);
         RubedoEngine.CurrentState.Add(entity);
 
-        emitter2.PlayBurst(10);
-        emitter.PlayBurst(40);
+        emitter2.PlayBurst(50);
+        emitter.PlayBurst(80);
     }
 
     public override void Update(DemoState state)

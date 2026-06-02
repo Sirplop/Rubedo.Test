@@ -37,6 +37,7 @@ internal class DemoState : GameState
     public static bool fastPlace = false;
     public static bool drawBodies = true;
     public static bool deleteBodyIfTooFar = true;
+    public static bool allowCameraMove = true;
 
     public Vertical debugRoot;
 
@@ -73,6 +74,7 @@ internal class DemoState : GameState
     private int selectedDemo = 0;
     public List<DebugTextEntry> debugText = new List<DebugTextEntry>();
     private Vertical mouseVertical;
+    private int drawnBodies = 0;
 
     private double deltaTime = 0.0f;
 
@@ -127,7 +129,7 @@ internal class DemoState : GameState
         _camera = new Camera(this, new PixelViewport(RubedoEngine.Instance.GraphicsDevice, RubedoEngine.Instance.Window, 640, 640), 0);
         _camera.RenderLayers.Add((int)RenderLayer.Default);
         _camera.RenderLayers.Add((int)RenderLayer.UI);
-        _camera.Zoom = 24f;
+        _camera.SetZoomToUnitHeight(20);
     }
 
     public void CreateFPSDebugGUI()
@@ -144,7 +146,7 @@ internal class DemoState : GameState
     public void CreatePhysicsDebugGUI()
     {
         AddDebugLabel(debugRoot, () => RubedoEngine.Instance.World.timer.GetAsString(", "));
-        AddDebugLabel(debugRoot, () => $"Bodies: {RubedoEngine.Instance.World.bodies.Count} " +
+        AddDebugLabel(debugRoot, () => $"Bodies: {RubedoEngine.Instance.World.bodies.Count}, Drawn {drawnBodies} " +
             $"| Physics time: {RubedoEngine.Instance._physicsTimer.GetAsString("")}");
         AddDebugLabel(debugRoot, () => $"(C) Color velocity: {(colorVelocity ? "Yes" : "No")}");
         AddDebugLabel(debugRoot, () => $"(S) Show velocity: {(showVelocity ? "Yes" : "No")}");
@@ -193,28 +195,30 @@ internal class DemoState : GameState
                 _cameraLeft = 0f;
             CreateCamera();
         }
-
-        if (cameraLeft.Pressed() || cameraLeft.Held())
-            MainCamera.XY += new Vector2(-1, 0);
-        if (cameraRight.Pressed() || cameraRight.Held())
-            MainCamera.XY += new Vector2(1, 0);
-        if (cameraUp.Pressed() || cameraUp.Held())
-            MainCamera.XY += new Vector2(0, 1);
-        if (cameraDown.Pressed() || cameraDown.Held())
-            MainCamera.XY += new Vector2(0, -1);
-        if (cameraRotateCW.Pressed() || cameraRotateCW.Held())
-            MainCamera.Rotation += 0.01f;
-        if (cameraRotateCCW.Pressed() || cameraRotateCCW.Held())
-            MainCamera.Rotation -= 0.01f;
-        if (cameraScaleDown.Pressed() || cameraScaleDown.Held())
-            MainCamera.Scale -= new Vector2(0.01f, 0.01f);
-        if (cameraScaleUp.Pressed() || cameraScaleUp.Held())
-            MainCamera.Scale += new Vector2(0.01f, 0.01f);
-        if (cameraReset.Pressed())
+        if (allowCameraMove)
         {
-            MainCamera.XY = Vector2.Zero;
-            MainCamera.Rotation = 0;
-            MainCamera.Scale = Vector2.One;
+            if (cameraLeft.Pressed() || cameraLeft.Held())
+                MainCamera.XY += new Vector2(-1, 0);
+            if (cameraRight.Pressed() || cameraRight.Held())
+                MainCamera.XY += new Vector2(1, 0);
+            if (cameraUp.Pressed() || cameraUp.Held())
+                MainCamera.XY += new Vector2(0, 1);
+            if (cameraDown.Pressed() || cameraDown.Held())
+                MainCamera.XY += new Vector2(0, -1);
+            if (cameraRotateCW.Pressed() || cameraRotateCW.Held())
+                MainCamera.Rotation += 0.01f;
+            if (cameraRotateCCW.Pressed() || cameraRotateCCW.Held())
+                MainCamera.Rotation -= 0.01f;
+            if (cameraScaleDown.Pressed() || cameraScaleDown.Held())
+                MainCamera.Scale -= new Vector2(0.01f, 0.01f);
+            if (cameraScaleUp.Pressed() || cameraScaleUp.Held())
+                MainCamera.Scale += new Vector2(0.01f, 0.01f);
+            if (cameraReset.Pressed())
+            {
+                MainCamera.XY = Vector2.Zero;
+                MainCamera.Rotation = 0;
+                MainCamera.Scale = Vector2.One;
+            }
         }
 
         if (prevDemo.Released())
@@ -236,10 +240,11 @@ internal class DemoState : GameState
 
     private void Reset()
     {
+        allowCameraMove = true;
         drawBodies = true;
         deleteBodyIfTooFar = true;
         RubedoEngine.SizeOfMeter = 1;
-        _camera.Zoom = 24;
+        _camera.SetZoomToUnitHeight(20);
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.World.Clear();
         foreach (Entity ent in Entities)
@@ -322,7 +327,7 @@ internal class DemoState : GameState
         DebugText.Instance.DrawText(mouseScreen, 1f, mouse.ToNiceString(), 16, Renderer.Space.Screen);
         DebugText.Instance.DrawText(mouseScreen + new Vector2(0, 30), 1f, mouseScreen.ToNiceString(), 16, Renderer.Space.Screen);*/
 
-
+        drawnBodies = 0;
         if (drawBodies)
         {
             shapes.Begin(MainCamera);
@@ -331,7 +336,7 @@ internal class DemoState : GameState
                 PhysicsBody body = RubedoEngine.Instance.World.bodies[i];
                 if (!mainCamera.Intersects(in body.bounds))
                     continue; //shape not visible, don't draw!
-
+                drawnBodies++;
                 Color speedColor = Color.Black;
                 if (colorVelocity)
                 {

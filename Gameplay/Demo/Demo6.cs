@@ -34,7 +34,7 @@ internal class Demo6 : DemoBase
 
         animator = AnimatorExtensions.CreateSpriteAnimation("jotaro\\jotaro", 0.5f, sprite);
 
-        mouseSprite.Transform.LocalScale = new Vector2(state.MainCamera.Z * 4);
+        mouseSprite.Transform.LocalScale = new Vector2(4);
         mouseSprite.Add(sprite);
         mouseSprite.Add(animator);
         state.Add(mouseSprite);

@@ -6,6 +6,8 @@ using Rubedo.Object;
 using Rubedo.Graphics.Particles;
 using Rubedo.Graphics.Particles.Modifiers;
 using Rubedo.Graphics.Particles.Origins;
+using Rubedo.Input;
+using Rubedo.Components;
 
 namespace Test.Gameplay.Demo;
 
@@ -19,6 +21,16 @@ internal class Demo10 : DemoBase
     private Texture2D fadedcircle;
     private Texture2D pixel;
 
+    private ParticleEmitter e1;
+    private ParticleEmitter e2;
+    private ParticleEmitter e3;
+    private ParticleEmitter e4;
+    private ParticleEmitter e5;
+    private ParticleEmitter e6;
+    private ParticleEmitter e7;
+    private ParticleEmitter e8;
+    private ParticleEmitter e9;
+
     public Demo10()
     {
         description = "Particle Test";
@@ -26,7 +38,8 @@ internal class Demo10 : DemoBase
 
     public override void Initialize(DemoState state)
     {
-        state.MainCamera.Zoom = 1;
+        state.MainCamera.SetZoomToUnitHeight(25);
+        DemoState.allowCameraMove = false;
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
 
@@ -37,101 +50,116 @@ internal class Demo10 : DemoBase
         pixel = new Texture2D(RubedoEngine.Graphics.GraphicsDevice, 1, 1);
         pixel.SetData<Color>(new Color[1] { Color.White });
 
-        Entity entity = new Entity(new Vector2(-350, -200));
-        ParticleEmitter emitter = new ParticleEmitter("Small Star Burst", new Interval(25, 50), new Interval(-Math.PI, Math.PI), 20.0f, new Interval(2000, 3000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, Color.Yellow, new Color(0, 255, 0), Color.Blue, new Color(255, 0, 255), Color.Transparent));
-        emitter.Origin = new PointOrigin();
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        ParticleBuilder builder = new ParticleBuilder("Small Star Burst", 20f, false)
+            .SetSpeed(1, 2)
+            .SetDirection(-Math.PI, Math.PI)
+            .SetMaxAge(2000, 3000)
+            .AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, Color.Yellow, new Color(0, 255, 0), Color.Blue, new Color(255, 0, 255), Color.Transparent))
+            .SetOrigin(new PointOrigin())
+            .SetTexture(star, 0);
+        Entity entity = new Entity(new Vector2(-12.5f, -7.5f));
+        e1 = builder.BuildAndStart();
+        entity.Add(e1);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(0, -200));
-        emitter = new ParticleEmitter("Star Ring Implode", new Interval(15, 80), new Interval(-Math.PI, Math.PI), 300.0f, new Interval(500, 1000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255), Color.Transparent));
-        emitter.AddBirthModifier(new InwardBirthModifier());
-        emitter.Origin = new CircleOrigin(100, true);
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        //NOTE: you probably shouldn't be reusing builders like this - you can, but it's messy and probably bad practice.
+        //      Should probably make new builders like above per system type. (you can build multiple copies from one builder, though!)
+        builder.SetName("Star Ring Implode")
+            .AddBirthModifier(new InwardBirthModifier())
+            .SetOrigin(new CircleOrigin(3, true))
+            .SetParticleRate(300f)
+            .SetSpeed(0.4f, 1.5f)
+            .SetMaxAge(1000, 1500);
+        entity = new Entity(new Vector2(0, -7.5f));
+        e2 = builder.BuildAndStart();
+        entity.Add(e2);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(350, -200));
-        emitter = new ParticleEmitter("Star Box Implode", new Interval(5, 25), new Interval(-Math.PI, Math.PI), 200.0f, new Interval(2000, 2000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255), Color.Transparent));
-        emitter.Origin = new RectangleOrigin(300, 100);
-        emitter.AddBirthModifier(new InwardBirthModifier());
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        builder.SetName("Star Box Implode")
+            .SetSpeed(0.2f, 0.8f)
+            .SetMaxAge(2000, 2000)
+            .SetOrigin(new RectangleOrigin(11, 4f));
+        entity = new Entity(new Vector2(12.5f, -7.5f));
+        e3 = builder.BuildAndStart();
+        entity.Add(e3);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(-350, 0));
-        emitter = new ParticleEmitter("Star Burst", new Interval(55, 100), new Interval(-Math.PI, Math.PI), 100.0f, new Interval(2000, 2000));
-        emitter.AddModifier(new ScaleModifier(1, 4));
-        emitter.AddModifier(new AlphaFadeModifier());
-        emitter.AddBirthModifier(new ColorBirthModifier(Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255)));
-        emitter.Origin = new PointOrigin();
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        builder.SetName("Star Burst")
+            .SetSpeed(1f, 3f)
+            .SetParticleRate(100)
+            .ClearBirthModifiers().ClearModifiers()
+            .AddModifier(new ScaleModifier(1, 4))
+            .AddModifier(new AlphaFadeModifier())
+            .AddBirthModifier(new ColorBirthModifier(Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255)))
+            .SetOrigin(new PointOrigin());
+        entity = new Entity(new Vector2(-12.5f, 0));
+        e4 = builder.BuildAndStart();
+        entity.Add(e4);
         state.Add(entity);
 
+        builder.SetName("Star Circle Explode")
+            .SetSpeed(0.2f, 0.8f)
+            .ClearBirthModifiers().ClearModifiers()
+            .AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255), Color.Transparent))
+            .AddBirthModifier(new OutwardBirthModifier())
+            .SetOrigin(new CircleOrigin(3, true));
         entity = new Entity(new Vector2(0, 0));
-        emitter = new ParticleEmitter("Star Circle Explode", new Interval(5, 25), new Interval(-Math.PI, Math.PI), 100.0f, new Interval(2000, 2000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255), Color.Transparent));
-        emitter.Origin = new CircleOrigin(100, true);
-        emitter.AddBirthModifier(new OutwardBirthModifier());
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        e5 = builder.BuildAndStart();
+        entity.Add(e5);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(350, 0));
-        emitter = new ParticleEmitter("Star Box Explode", new Interval(5, 25), new Interval(-Math.PI, Math.PI), 200.0f, new Interval(2000, 2000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.Red, new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(255, 0, 255), Color.Transparent));
-        emitter.Origin = new RectangleOrigin(300, 100, true);
-        emitter.AddBirthModifier(new OutwardBirthModifier());
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        builder.SetName("Star Box Explode")
+            .SetSpeed(0.2f, 0.8f)
+            .SetOrigin(new RectangleOrigin(11, 4, true));
+        entity = new Entity(new Vector2(12.5f, 0));
+        e6 = builder.BuildAndStart();
+        entity.Add(e6);
         state.Add(entity);
 
-
-        entity = new Entity(new Vector2(-350, 200));
-        emitter = new ParticleEmitter("Fire", new Interval(5, 25), new Interval(-Math.PI, Math.PI), 50.0f, new Interval(2000, 2500));
-        emitter.Origin = new CircleOrigin(10, false);
-        emitter.AddModifier(new ScaleModifier(3, 4));
-        emitter.AddModifier(new ColorRangeModifier(Color.White, Color.Orange, Color.DarkRed, Color.Black, Color.Transparent));
-        emitter.AddModifier(new GravityModifier(new Vector2(0, -100)));
-        emitter.Texture = circle;
-        emitter.Start();
-        entity.Add(emitter);
+        builder = new ParticleBuilder("Fire", 50f, false)
+            .SetDirection(-Math.PI, Math.PI)
+            .SetSpeed(0.2f, 1f)
+            .SetMaxAge(2000, 2500)
+            .SetTexture(circle, 0)
+            .SetOrigin(new CircleOrigin(0.2f, false))
+            .AddModifier(new ScaleModifier(3, 4))
+            .AddModifier(new ColorRangeModifier(Color.White, Color.Orange, Color.DarkRed, Color.Transparent))
+            .AddModifier(new GravityModifier(new Vector2(0, -4)));
+        entity = new Entity(new Vector2(-12.5f, 7.5f));
+        e7 = builder.BuildAndStart();
+        entity.Add(e7);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(0, 200));
-        emitter = new ParticleEmitter("Multi-shape burst", new Interval(100, 150), new Interval(-Math.PI, Math.PI), 50.0f, new Interval(1000, 1500));
-        emitter.AddBirthModifier(new ScaleBirthModifier(new Interval(1, 3)));
-        emitter.AddBirthModifier(new TextureBirthModifier(star, circle));
-        emitter.AddBirthModifier(new ColorBirthModifier(Color.LightBlue));
-        emitter.AddModifier(new AlphaFadeModifier());
-        emitter.Origin = new PointOrigin();
-        emitter.Texture = star;
-        emitter.Start();
-        entity.Add(emitter);
+        builder = new ParticleBuilder("Multi-shape Burst", 50f, false)
+            .SetSpeed(1f, 1.5f)
+            .SetDirection(-Math.PI, Math.PI)
+            .SetMaxAge(1000, 1500)
+            .SetTexture(star, 0)
+            .SetOrigin(new CircleAnimatedOrigin(2.5f, 4))
+            .AddBirthModifier(new ScaleBirthModifier(new Interval(1, 3)))
+            .AddBirthModifier(new TextureBirthModifier(star, circle))
+            //.AddBirthModifier(new ColorBirthModifier(Color.GhostWhite, Color.LightBlue))
+            .AddModifier(new ColorRangeModifier(Color.GhostWhite, Color.LightBlue))
+            .AddModifier(new AlphaFadeModifier());
+        entity = new Entity(new Vector2(0, 7.5f));
+        e8 = builder.BuildAndStart();
+        entity.Add(e8);
         state.Add(entity);
 
-        entity = new Entity(new Vector2(350, 200));
-        emitter = new ParticleEmitter("Portal", new Interval(0, 0), new Interval(-Math.PI, Math.PI), 50.0f, new Interval(2000, 6000));
-        emitter.AddModifier(new ColorRangeModifier(Color.Transparent, Color.LightBlue, Color.Orange, Color.Transparent));
-        emitter.AddBirthModifier(new ScaleBirthModifier(new Interval(2, 15)));
-        emitter.AddModifier(new ActionModifier(
-            (e, p) => p.Transform.Position = e.Transform.Position + new Vector2((float)Math.Sin(p.Age / p.MaxAge * 6.28) * 150, 
-            p.Transform.Position.Y - e.Transform.Position.Y)));
-        emitter.Origin = new RectangleOrigin(300, 200);
-        emitter.Texture = pixel;
-        emitter.Start();
-        entity.Add(emitter);
+        builder = new ParticleBuilder("Portal", 50, false)
+            .SetSpeed(0, 0)
+            .SetDirection(-Math.PI, Math.PI)
+            .SetMaxAge(2000, 6000)
+            .SetTexture(pixel, 0)
+            .SetOrigin(new RectangleOrigin(8, 8))
+            .AddModifier(new ColorRangeModifier(Color.Transparent, Color.LightBlue, Color.Orange, Color.Transparent))
+            .AddBirthModifier(new ScaleBirthModifier(new Interval(2, 15)))
+            .AddModifier(new ActionModifier(
+                (e, p) => p.Transform.Position = e.Transform.Position + new Vector2((float)Math.Sin(p.Age / p.MaxAge * 6.28) * 5,
+                p.Transform.Position.Y - e.Transform.Position.Y)));
+        entity = new Entity(new Vector2(12.5f, 7.5f));
+        e9 = builder.BuildAndStart();
+        entity.Add(e9);
         state.Add(entity);
 
     }
