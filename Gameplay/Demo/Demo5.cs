@@ -1,9 +1,11 @@
 ﻿using FontStashSharp;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Rubedo;
 using Rubedo.Graphics.Sprites;
 using Rubedo.Input;
 using Rubedo.Lib;
+using Rubedo.Resources;
 using Rubedo.UI;
 using Rubedo.UI.Graphics;
 using Rubedo.UI.Input;
@@ -71,14 +73,14 @@ internal class Demo5 : DemoBase
         horz.Anchor = Anchor.BottomLeft;
         GUI.Root.AddChild(horz);
 
-        Image spaceTest = new Image(Assets.LoadTexture("ball"));
+        Image spaceTest = new Image(Assets.GetResource<Texture2D>("ball"));
         spaceTest.Anchor = Anchor.Left;
         horz.AddChild(spaceTest);
-        spaceTest = new Image(Assets.LoadTexture("ball"));
+        spaceTest = new Image(Assets.GetResource<Texture2D>("ball"));
         spaceTest.Anchor = Anchor.Left;
         horz.AddChild(spaceTest);
 
-        FontSystem font = Assets.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFont("fs-default");
         text = new Label(font, "The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog adfasoqiw yraldh ald halwdha ldjahw dlawe havbx get872rq", Color.White, 18);
         text.MaxSize = new Vector2(64, -1);
         Button textButton = new Button();
@@ -89,7 +91,7 @@ internal class Demo5 : DemoBase
         textButton.OnReleased += TextButtonCallback;
         vert.AddChild(textButton);
 
-        image = new Image(Assets.LoadTexture("ball"), 320, 320);
+        image = new Image(Assets.GetResource<Texture2D>("ball"), 320, 320);
         image.drawMode = Image.DrawMode.Tiled;
         image.Anchor = Anchor.BottomRight;
         image.uvOffset = new Vector2(0.5f, 0.5f);
@@ -104,10 +106,10 @@ internal class Demo5 : DemoBase
     private Button GetButton(int x)
     {
         Button button = new Button();
-        NineSliceImage image = new NineSliceImage(new TextureRegion2D(Assets.LoadTexture("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
+        NineSliceImage image = new NineSliceImage(new TextureRegion2D(Assets.GetResource<Texture2D>("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
         image.Image.filled = true;
         images.Add(image);
-        FontSystem font = Assets.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFont("fs-default");
         Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
         text.MaxSize = new Vector2(64, -1);
         text.Anchor = Anchor.Center;
@@ -137,11 +139,11 @@ internal class Demo5 : DemoBase
     private Button GetButtonTile(int x)
     {
         Button button = new Button();
-        Image image = new Image(Assets.LoadTexture("ball"), 96, 96);
+        Image image = new Image(Assets.GetResource<Texture2D>("ball"), 96, 96);
         image.drawMode = Image.DrawMode.Tiled;
         image.uvOffset = new Vector2(0.5f, 0.5f);
         tileImages.Add(image);
-        FontSystem font = Assets.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFont("fs-default");
         Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
         text.MaxSize = new Vector2(64, -1);
         text.Anchor = Anchor.Center;

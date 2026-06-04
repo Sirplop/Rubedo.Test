@@ -1,4 +1,5 @@
-﻿using Rubedo;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Rubedo.Resources;
 using Rubedo.UI;
 using Rubedo.UI.Graphics;
 using Rubedo.UI.Layout;
@@ -17,22 +18,22 @@ internal class Demo7 : DemoBase
     public override void Initialize(DemoState state)
     {
         Vertical vertical = new Vertical();
-        Image image = new Image(Assets.LoadTexture("ball"), 64, 64);
+        Image image = new Image(Assets.GetResource<Texture2D>("ball"), 64, 64);
         vertical.AddChild(image);
         GUI.Root.AddChild(vertical);
         vertical = new Vertical();
         vertical.Anchor = Anchor.TopRight;
-        image = new Image(Assets.LoadTexture("ball"), 64, 64);
+        image = new Image(Assets.GetResource<Texture2D>("ball"), 64, 64);
         vertical.AddChild(image);
         GUI.Root.AddChild(vertical);
         vertical = new Vertical();
         vertical.Anchor = Anchor.BottomLeft;
-        image = new Image(Assets.LoadTexture("ball"), 64, 64);
+        image = new Image(Assets.GetResource<Texture2D>("ball"), 64, 64);
         vertical.AddChild(image);
         GUI.Root.AddChild(vertical);
         vertical = new Vertical();
         vertical.Anchor = Anchor.BottomRight;
-        image = new Image(Assets.LoadTexture("ball"), 64, 64);
+        image = new Image(Assets.GetResource<Texture2D>("ball"), 64, 64);
         vertical.AddChild(image);
         GUI.Root.AddChild(vertical);
     }

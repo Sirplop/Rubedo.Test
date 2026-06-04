@@ -23,6 +23,7 @@ using Rubedo.Graphics;
 using Rubedo.Graphics.Sprites;
 using Rubedo.Audio;
 using Rubedo.Lib.Coroutines;
+using Rubedo.Resources;
 
 namespace Test.Gameplay.Demo;
 
@@ -89,7 +90,7 @@ internal class DemoState : GameState
 
     public override void LoadContent()
     {
-        Assets.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
+        Assets.CreateNewFontSystem("fs-default", "DroidSans.ttf", "DroidSansJapanese.ttf", "Symbola-Emoji.ttf");
         base.LoadContent();
     }
 
@@ -114,7 +115,7 @@ internal class DemoState : GameState
     public void CreateMouseDebugGUI()
     {
         mouseVertical = new Vertical();
-        FontSystem font = Assets.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFont("fs-default");
         Label world = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         Label screen = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         mouseVertical.AddChild(world);
@@ -159,7 +160,7 @@ internal class DemoState : GameState
 
     public void AddDebugLabel(Vertical vert, Func<string> valueFunc)
     {
-        FontSystem font = Assets.GetFontSystem("fs-default");
+        FontSystem font = Assets.GetFont("fs-default");
         Label label = new Label(font, string.Empty, Color.AntiqueWhite, 18);
         label.TightLineHeight = true;
         DebugTextEntry entry = new DebugTextEntry(label, valueFunc);

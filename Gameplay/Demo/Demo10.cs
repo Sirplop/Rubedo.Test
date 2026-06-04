@@ -8,6 +8,7 @@ using Rubedo.Graphics.Particles.Modifiers;
 using Rubedo.Graphics.Particles.Origins;
 using Rubedo.Input;
 using Rubedo.Components;
+using Rubedo.Resources;
 
 namespace Test.Gameplay.Demo;
 
@@ -43,9 +44,9 @@ internal class Demo10 : DemoBase
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
 
-        star = Assets.LoadTexture("star");
-        circle = Assets.LoadTexture("circle");
-        fadedcircle = Assets.LoadTexture("fadedcircle");
+        star = Assets.GetResource<Texture2D>("star");
+        circle = Assets.GetResource<Texture2D>("circle");
+        fadedcircle = Assets.GetResource<Texture2D>("fadedcircle");
 
         pixel = new Texture2D(RubedoEngine.Graphics.GraphicsDevice, 1, 1);
         pixel.SetData<Color>(new Color[1] { Color.White });
