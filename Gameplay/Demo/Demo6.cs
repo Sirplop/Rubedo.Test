@@ -6,6 +6,7 @@ using Rubedo.Input;
 using Rubedo.Lib.Extensions;
 using Rubedo.Lib.StateMachine;
 using Rubedo.Object;
+using Rubedo.Resources;
 using System.Collections.Generic;
 
 namespace Test.Gameplay.Demo;
