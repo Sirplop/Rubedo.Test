@@ -33,7 +33,7 @@ internal class Demo6 : DemoBase
         sprite = new Sprite("", 5, Color.White);
         sprite.Pivot = new Vector2(0.5f, 0f);
 
-        animator = AnimatorExtensions.CreateSpriteAnimation("jotaro\\jotaro", 0.5f, sprite);
+        animator = AnimatorExtensions.CreateSpriteAnimation("jotaro/jotaro", 0.5f, sprite);
 
         mouseSprite.Transform.LocalScale = new Vector2(4);
         mouseSprite.Add(sprite);

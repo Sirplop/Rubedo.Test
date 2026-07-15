@@ -36,89 +36,51 @@ internal class Demo5 : DemoBase
     public override void Initialize(DemoState state)
     {
         Assets.CreateNewFontSystem("fs-default", "fonts/DroidSans.ttf", "fonts/DroidSansJapanese.ttf", "fonts/Symbola-Emoji.ttf");
-        
-        vert = new Vertical();
+
+        vert = GUI.Root.AddVertical(new Padding(5, 5, 0, 0), 5);
         vert.Offset = new Vector2(0, 30);
-        Horizontal hor1 = new Horizontal();
-        Horizontal hor2 = new Horizontal();
-        Horizontal hor3 = new Horizontal();
 
-        hor1.AddChild(GetButton(1));
-        hor1.AddChild(GetButton(2));
-        hor1.AddChild(GetButton(3));
-
-        hor2.AddChild(GetButton(4));
-        hor2.AddChild(GetButton(5));
-        hor2.AddChild(GetButton(6));
-        
-        hor3.AddChild(GetButtonTile(7));
-        hor3.AddChild(GetButtonTile(8));
-        hor3.AddChild(GetButtonTile(9));
+        Horizontal hor1 = vert.AddHorizontal(5);
+        Horizontal hor2 = vert.AddHorizontal(5);
+        Horizontal hor3 = vert.AddHorizontal(5);
         hor3.Anchor = Anchor.Top;
 
-        hor1.childPadding = 5;
-        hor2.childPadding = 5;
-        hor3.childPadding = 5;
-        vert.childPadding = 5;
-        vert.paddingLeft = 5;
-        vert.paddingTop = 5;
+        GetButton(hor1, 1, false);
+        GetButton(hor1, 2, false);
+        GetButton(hor1, 3, false);
+        GetButton(hor2, 4, false);
+        GetButton(hor2, 5, false);
+        GetButton(hor2, 6, false);
+        GetButton(hor3, 7, true);
+        GetButton(hor3, 8, true);
+        GetButton(hor3, 9, true);
 
-        vert.AddChild(hor1);
-        vert.AddChild(hor2);
-        vert.AddChild(hor3);
-
-        GUI.Root.AddChild(vert);
-
-        horz = new Horizontal();
+        horz = GUI.Root.AddHorizontal(0);
         horz.Anchor = Anchor.BottomLeft;
-        GUI.Root.AddChild(horz);
 
-        Image spaceTest = new Image(Assets.GetResource<Texture2D>("ball"));
-        spaceTest.Anchor = Anchor.Left;
-        horz.AddChild(spaceTest);
-        spaceTest = new Image(Assets.GetResource<Texture2D>("ball"));
-        spaceTest.Anchor = Anchor.Left;
-        horz.AddChild(spaceTest);
+        Image spaceTest = horz.AddImage("ball", Color.White);
+        spaceTest.Anchor = Anchor.Center;
 
-        FontSystem font = Assets.GetFont("fs-default");
-        text = new Label(font, "The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog adfasoqiw yraldh ald halwdha ldjahw dlawe havbx get872rq", Color.White, 18);
-        text.MaxSize = new Vector2(64, -1);
-        Button textButton = new Button();
+        Button textButton = vert.AddButton(TextButtonCallback);
+        textButton.Height = 100;
         textButton.Anchor = Anchor.Left;
-        //textButton.Offset = new Vector2(0, 100);
+        
+        text = textButton.AddLabel("The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog adfasoqiw yraldh ald halwdha ldjahw dlawe havbx get872rq", Color.White, 18);
+        text.MaxSize = new Vector2(64, -1);
+        textButton.Anchor = Anchor.Left;
         textButton.AddChild(new SelectableTintSet(text, 1f));
-        textButton.AddChild(text);
-        textButton.OnReleased += TextButtonCallback;
-        vert.AddChild(textButton);
 
-        image = new Image(Assets.GetResource<Texture2D>("ball"), 320, 320);
-        image.drawMode = Image.DrawMode.Tiled;
+        image = GUI.Root.AddTiledImage("ball", 320, 320, Color.White);
         image.Anchor = Anchor.BottomRight;
         image.uvOffset = new Vector2(0.5f, 0.5f);
-        GUI.Root.AddChild(image);
-
-        UIComponent comp = GUI.Root.Children[0];
-        GUI.Root.RemoveChild(comp);
-        GUI.Root.AddChild(comp);
 
         state.CreateFPSDebugGUI();
     }
-    private Button GetButton(int x)
-    {
-        Button button = new Button();
-        NineSliceImage image = new NineSliceImage(new TextureRegion2D(Assets.GetResource<Texture2D>("button_sliced")).CreateNineSliceFromUVs(0.25f), Random.Range(96, 256), 100);
-        image.Image.filled = true;
-        images.Add(image);
-        FontSystem font = Assets.GetFont("fs-default");
-        Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
-        text.MaxSize = new Vector2(64, -1);
-        text.Anchor = Anchor.Center;
-        text.horizontalAlignment = Label.HorizontalAlignment.Center;
-        image.AddChild(text);
-        button.AddChild(image);
-        button.AddChild(new SelectableTintSet(image, 1f));
 
-        button.OnReleased += (b) =>
+    private void GetButton(UIComponent component, int x, bool tileImage)
+    {
+        Label text = null;
+        Button button = component.AddButton((b) =>
         {
             switch (text.horizontalAlignment)
             {
@@ -132,43 +94,24 @@ internal class Demo5 : DemoBase
                     text.horizontalAlignment = Label.HorizontalAlignment.Left;
                     break;
             }
-        };
+        });
+        if (tileImage)
+        {
+            Image image = button.AddTiledImage("ball", 96, 96, Color.Blue);
+            image.uvOffset = new Vector2(0.25f, 0.25f);
+            tileImages.Add(image);
+        }
+        else
+        {
+            NineSliceImage image = button.AddNineSlice("button_sliced", Random.Range(96, 256), 100, Color.White, true, 0.25f);
+            images.Add(image);
 
-        return button;
-    }
-    private Button GetButtonTile(int x)
-    {
-        Button button = new Button();
-        Image image = new Image(Assets.GetResource<Texture2D>("ball"), 96, 96);
-        image.drawMode = Image.DrawMode.Tiled;
-        image.uvOffset = new Vector2(0.5f, 0.5f);
-        tileImages.Add(image);
-        FontSystem font = Assets.GetFont("fs-default");
-        Label text = new Label(font, x.ToString() + ": This is short text, but it could also be longer.", Color.Red, 12);
+            button.AddChild(new SelectableTintSet(image, 1f));
+        }
+        text = button.AddLabel(x.ToString() + ": This is short text, but it could also be longer.", Color.Red);
         text.MaxSize = new Vector2(64, -1);
         text.Anchor = Anchor.Center;
         text.horizontalAlignment = Label.HorizontalAlignment.Center;
-        image.AddChild(text);
-        button.AddChild(image);
-        button.AddChild(new SelectableTintSet(image, 1f));
-
-        button.OnReleased += (b) =>
-        {
-            switch (text.horizontalAlignment)
-            {
-                case Label.HorizontalAlignment.Left:
-                    text.horizontalAlignment = Label.HorizontalAlignment.Center;
-                    break;
-                case Label.HorizontalAlignment.Center:
-                    text.horizontalAlignment = Label.HorizontalAlignment.Right;
-                    break;
-                case Label.HorizontalAlignment.Right:
-                    text.horizontalAlignment = Label.HorizontalAlignment.Left;
-                    break;
-            }
-        };
-
-        return button;
     }
 
     private void TextButtonCallback(Button pusher)
@@ -184,7 +127,7 @@ internal class Demo5 : DemoBase
     private bool pauseTextScale = false;
     public override void Update(DemoState state)
     {
-        if (pauseTextScale)
+        if (pauseTextScale || text == null)
             return;
         float t = Wave.Sine((float)Time.RunningTime, 4, 0.5f, 0) + 0.5f;
         float val = Math.Mix(64, 512, t);
@@ -236,6 +179,20 @@ internal class Demo5 : DemoBase
                     horz.Anchor = Anchor.TopLeft;
                     break;
             }
+        }
+
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.B))
+        {
+            GUI.DebugDraw = !GUI.DebugDraw;
+        }
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.PageUp))
+        {
+            GUI.DebugDrawDepthMin++;
+        }
+        if (InputManager.KeyPressed(Microsoft.Xna.Framework.Input.Keys.PageDown))
+        {
+            int depth = GUI.DebugDrawDepthMin - 1;
+            GUI.DebugDrawDepthMin = depth < 0 ? 0 : depth;
         }
     }
 }
