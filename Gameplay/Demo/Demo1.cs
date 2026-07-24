@@ -8,6 +8,7 @@ using Rubedo.Physics2D.Collision;
 using Rubedo.Physics2D.Common;
 using Rubedo.Physics2D.Dynamics;
 using Rubedo.Physics2D.Dynamics.Shapes;
+using System.Collections.Generic;
 
 namespace Test.Gameplay.Demo;
 
@@ -64,7 +65,7 @@ internal class Demo1 : DemoBase
 
     public override void Update(DemoState state) { }
 
-    private bool shapeSet = true;
+    private int shapeSet = 1;
     public override void HandleInput(DemoState state)
     {
         if (InputManager.MousePressed(InputManager.MouseButtons.Left) ||
@@ -75,7 +76,7 @@ internal class Demo1 : DemoBase
             float y = Random.Range(0.5f, 2f);
 
             Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
-            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Circle : ShapeType.Capsule);
+            Collider comp = Collider.CreateUnitShape(shapeSet == 2 ? ShapeType.Capsule : ShapeType.Circle);
             state.MakeBody(entity, material, comp, false);
         }
         if (InputManager.MousePressed(InputManager.MouseButtons.Right) ||
@@ -86,12 +87,22 @@ internal class Demo1 : DemoBase
             float y = Random.Range(0.5f, 2f);
 
             Entity entity = new Entity(InputManager.MouseWorldPosition(), 0, new Vector2(x, y));
-            Collider comp = Collider.CreateUnitShape(shapeSet ? ShapeType.Box : ShapeType.Polygon, false, 3);
+            Collider comp;
+            if (shapeSet == 3)
+            {
+                List<Polygon> polygons = Collider.CreateRandomPolygons(Random.Range(2, 6));
+                comp = CompoundBody.FromPolygons(polygons);
+            }
+            else
+            {
+                comp = Collider.CreateUnitShape(shapeSet == 1 ? ShapeType.Box : ShapeType.Polygon, false, 3);
+            }
+
             state.MakeBody(entity, material, comp, false);
         }
         if (InputManager.MousePressed(InputManager.MouseButtons.Middle))
         {
-            shapeSet = !shapeSet;
+            shapeSet = shapeSet == 3 ? 1 : shapeSet + 1;
         }
 
         if (InputManager.KeyPressed(Keys.Up))

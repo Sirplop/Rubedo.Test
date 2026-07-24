@@ -263,13 +263,21 @@ internal class DemoState : GameState
 
     public PhysicsBody MakeBody(Entity entity, PhysicsMaterial material, Collider collider, bool isStatic)
     {
-        PhysicsBody body = new PhysicsBody(collider, material);
+        PhysicsBody body;
+        if (collider.shape.type == ShapeType.Compound)
+        {
+            body = new CompoundBody(collider, material);
+        }
+        else
+        {
+            body = new PhysicsBody(collider, material);
+        }
         if (isStatic)
             body.SetStatic();
         entity.Add(body);
         entity.Add(collider);
-        RubedoEngine.Instance.World.AddBody(body);
         this.Add(entity);
+        RubedoEngine.Instance.World.AddBody(body);
         return body;
     }
 
@@ -383,6 +391,41 @@ internal class DemoState : GameState
                         Polygon polygon = (Polygon)body.collider.shape;
                         shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.Transform, speedColor);
                         shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White);
+                        break;
+                    case ShapeType.Compound:
+                        CompoundShape compound = (CompoundShape)body.collider.shape;
+                        foreach (ChildShape child in compound.Children)
+                        {
+                            switch (child.Shape.type)
+                            {
+                                case ShapeType.Circle:
+                                    Circle circle = (Circle)child.Shape;
+                                    Transform circleTrans = new Transform(child.LocalOffset, child.LocalAngle);
+                                    Vector2 vA2 = circleTrans.LocalToWorldPosition(circle.Transform.Position);
+                                    Vector2 vB2 = circle.Transform.LocalToWorldPosition(Vector2.UnitY * circle.radius);
+
+                                    shapes.DrawCircleFill(circle.Transform, circle.radius, speedColor);
+                                    shapes.DrawLine(vA2, vB2, Color.White);
+                                    shapes.DrawCircle(circle.Transform, circle.radius, Color.White);
+                                    break;
+                                case ShapeType.Capsule:
+                                    Capsule capsule2 = (Capsule)child.Shape;
+                                    capsule2.TransformPoints();
+                                    shapes.DrawCapsuleFill(capsule2.Transform, capsule2.transRadius, capsule2.transStart, capsule2.transEnd, speedColor);
+                                    shapes.DrawCapsule(capsule2.Transform, capsule2.transRadius, capsule2.transStart, capsule2.transEnd, Color.White);
+                                    break;
+                                case ShapeType.Box:
+                                    Box box2 = (Box)child.Shape;
+                                    shapes.DrawBoxFill(box2.Transform, box2.width, box2.height, speedColor);
+                                    shapes.DrawBox(box2.Transform, box2.width, box2.height, Color.White);
+                                    break;
+                                case ShapeType.Polygon:
+                                    Polygon polygon2 = (Polygon)child.Shape;
+                                    shapes.DrawPolygonFill(polygon2.vertices, ShapeUtility.ComputeTriangles(polygon2.VertexCount), polygon2.Transform, speedColor);
+                                    shapes.DrawPolygon(polygon2.vertices, polygon2.Transform, Color.White);
+                                    break;
+                            }
+                        }
                         break;
                 }
                 if (showVelocity)
