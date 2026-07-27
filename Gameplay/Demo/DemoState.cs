@@ -351,6 +351,8 @@ internal class DemoState : GameState
                 {
                     if (body.isStatic)
                         speedColor = new Color(50, 50, 50);
+                    else if (!body.IsAwake)
+                        speedColor = new Color(152, 0, 255);
                     else
                     {
                         float val = body.LinearVelocity.Length() * 20f;
