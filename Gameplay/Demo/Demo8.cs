@@ -7,7 +7,7 @@ using System.Collections;
 namespace Test.Gameplay.Demo;
 
 /// <summary>
-/// Sprite Test
+/// Audio & Shader Test
 /// </summary>
 internal class Demo8 : DemoBase
 {
@@ -20,7 +20,7 @@ internal class Demo8 : DemoBase
 
     public Demo8()
     {
-        description = "Audio Test";
+        description = "Audio & Shader Test";
     }
     public override void Initialize(DemoState state)
     {
