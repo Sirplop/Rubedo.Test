@@ -22,6 +22,8 @@ internal class Demo6 : DemoBase
     Animator animator;
     Effect rainbowEffect;
 
+    int saturation = 1;
+
     public Demo6()
     {
         description = "Sprite Test";
@@ -59,6 +61,11 @@ internal class Demo6 : DemoBase
         if (InputManager.MousePressed(InputManager.MouseButtons.Left))
         {
             sprite.LayerDepth = sprite.LayerDepth == 2 ? 0 : 2;
+        }
+        if (InputManager.MousePressed(InputManager.MouseButtons.Right))
+        {
+            saturation = saturation == 1 ? 0 : 1;
+            rainbowEffect.Parameters["Saturation"]?.SetValue(saturation);
         }
     }
 
