@@ -33,6 +33,8 @@ internal class Demo6 : DemoBase
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
 
+        state.MainCamera.Zoom = 1;
+
         mouseSprite = new Entity();
         sprite = new Sprite("", 5, Color.White);
         sprite.Pivot = new Vector2(0.5f, 0f);

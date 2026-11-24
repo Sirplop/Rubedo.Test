@@ -8,6 +8,8 @@ namespace Test;
 
 public class DemoGame : Rubedo.RubedoEngine
 {
+    public static Color ClearColor = Color.Black;
+
     public DemoGame() : base() { }
 
     protected override void LoadContent()
@@ -28,7 +30,7 @@ public class DemoGame : Rubedo.RubedoEngine
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.Black);
+        GraphicsDevice.Clear(ClearColor);
         base.Draw(gameTime);
     }
 }

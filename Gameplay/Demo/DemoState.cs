@@ -37,6 +37,7 @@ internal class DemoState : GameState
     public static bool showAABB = false;
     public static bool fastPlace = false;
     public static bool drawBodies = true;
+    public static float bodyThickness = 2f;
     public static bool deleteBodyIfTooFar = true;
     public static bool allowCameraMove = true;
 
@@ -57,6 +58,7 @@ internal class DemoState : GameState
         new Demo9(),
         new Demo10(),
         new Demo11(),
+        new Demo12(),
     };
 
     private readonly AllCondition prevDemo = new AllCondition(new KeyCondition(Keys.Left), new KeyCondition(Keys.LeftShift, true));
@@ -243,11 +245,13 @@ internal class DemoState : GameState
     {
         allowCameraMove = true;
         drawBodies = true;
+        bodyThickness = 2;
         deleteBodyIfTooFar = true;
         RubedoEngine.SizeOfMeter = 1;
         _camera.SetZoomToUnitHeight(20);
         PhysicsWorld.ResetGravity();
         RubedoEngine.Instance.World.Clear();
+        DemoGame.ClearColor = Color.Black;
         foreach (Entity ent in Entities)
             Entities.Remove(ent);
 
@@ -364,7 +368,7 @@ internal class DemoState : GameState
                 if (showAABB)
                 {
                     AABB bounds = body.bounds;
-                    shapes.DrawBox(bounds.min, bounds.max, Color.Green);
+                    shapes.DrawBox(bounds.min, bounds.max, Color.Green, bodyThickness);
                 }
 
                 switch (body.collider.shape.type)
@@ -375,24 +379,24 @@ internal class DemoState : GameState
                         Vector2 vB = shape.Transform.LocalToWorldPosition(Vector2.UnitY * shape.radius);
 
                         shapes.DrawCircleFill(shape.Transform, shape.radius, speedColor);
-                        shapes.DrawLine(vA, vB, Color.White);
-                        shapes.DrawCircle(shape.Transform, shape.radius, Color.White);
+                        shapes.DrawLine(vA, vB, Color.White, bodyThickness);
+                        shapes.DrawCircle(shape.Transform, shape.radius, Color.White, bodyThickness);
                         break;
                     case ShapeType.Box:
                         Box box = (Box)body.collider.shape;
                         shapes.DrawBoxFill(box.Transform, box.width, box.height, speedColor);
-                        shapes.DrawBox(box.Transform, box.width, box.height, Color.White);
+                        shapes.DrawBox(box.Transform, box.width, box.height, Color.White, bodyThickness);
                         break;
                     case ShapeType.Capsule:
                         Capsule capsule = (Capsule)body.collider.shape;
                         capsule.TransformPoints();
                         shapes.DrawCapsuleFill(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, speedColor);
-                        shapes.DrawCapsule(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White);
+                        shapes.DrawCapsule(capsule.Transform, capsule.transRadius, capsule.transStart, capsule.transEnd, Color.White, bodyThickness);
                         break;
                     case ShapeType.Polygon:
                         Polygon polygon = (Polygon)body.collider.shape;
                         shapes.DrawPolygonFill(polygon.vertices, ShapeUtility.ComputeTriangles(polygon.VertexCount), polygon.Transform, speedColor);
-                        shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White);
+                        shapes.DrawPolygon(polygon.vertices, polygon.Transform, Color.White, bodyThickness);
                         break;
                     case ShapeType.Compound:
                         CompoundShape compound = (CompoundShape)body.collider.shape;
@@ -408,30 +412,30 @@ internal class DemoState : GameState
 
                                     shapes.DrawCircleFill(circle.Transform, circle.radius, speedColor);
                                     shapes.DrawLine(vA2, vB2, Color.White);
-                                    shapes.DrawCircle(circle.Transform, circle.radius, Color.White);
+                                    shapes.DrawCircle(circle.Transform, circle.radius, Color.White, bodyThickness);
                                     break;
                                 case ShapeType.Capsule:
                                     Capsule capsule2 = (Capsule)child.Shape;
                                     capsule2.TransformPoints();
                                     shapes.DrawCapsuleFill(capsule2.Transform, capsule2.transRadius, capsule2.transStart, capsule2.transEnd, speedColor);
-                                    shapes.DrawCapsule(capsule2.Transform, capsule2.transRadius, capsule2.transStart, capsule2.transEnd, Color.White);
+                                    shapes.DrawCapsule(capsule2.Transform, capsule2.transRadius, capsule2.transStart, capsule2.transEnd, Color.White, bodyThickness);
                                     break;
                                 case ShapeType.Box:
                                     Box box2 = (Box)child.Shape;
                                     shapes.DrawBoxFill(box2.Transform, box2.width, box2.height, speedColor);
-                                    shapes.DrawBox(box2.Transform, box2.width, box2.height, Color.White);
+                                    shapes.DrawBox(box2.Transform, box2.width, box2.height, Color.White, bodyThickness);
                                     break;
                                 case ShapeType.Polygon:
                                     Polygon polygon2 = (Polygon)child.Shape;
                                     shapes.DrawPolygonFill(polygon2.vertices, ShapeUtility.ComputeTriangles(polygon2.VertexCount), polygon2.Transform, speedColor);
-                                    shapes.DrawPolygon(polygon2.vertices, polygon2.Transform, Color.White);
+                                    shapes.DrawPolygon(polygon2.vertices, polygon2.Transform, Color.White, bodyThickness);
                                     break;
                             }
                         }
                         break;
                 }
                 if (showVelocity)
-                    shapes.DrawLine(body.Entity.Transform.Position, body.Entity.Transform.Position + body.LinearVelocity, Color.Aquamarine);
+                    shapes.DrawLine(body.Entity.Transform.Position, body.Entity.Transform.Position + body.LinearVelocity, Color.Aquamarine, bodyThickness);
             }
 
             shapes.End();

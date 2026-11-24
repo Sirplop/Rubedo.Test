@@ -28,16 +28,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Learninging\Rubedo\Rubedo.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\shaders\" />
-  </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
   
   <Target Name="BuildContent" AfterTargets="PostBuildEvent">
-    <Exec Command="Rubedo.Compiler.exe $(ProjectDir) $(TargetDir) textures" WorkingDirectory="$(ProjectDir)\ContentBuilder" />
+    <Exec Command="Rubedo.Compiler.exe $(ProjectDir) $(TargetDir) textures @(ProjectReference->'&quot;%(FullPath)&quot;',' ')" WorkingDirectory="$(ProjectDir)\ContentBuilder" />
   </Target>
   
   <PropertyGroup>

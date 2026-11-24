@@ -38,9 +38,11 @@ internal class Demo11 : DemoBase
         PhysicsLayer.SetCollisionWithLayer(0, 2, true);
         PhysicsLayer.SetCollisionWithLayer(2, 2, false);
         DemoState.drawBodies = false;
+        DemoState.bodyThickness = 5;
         DemoState.deleteBodyIfTooFar = false;
 
         state.MainCamera.Zoom = 1;
+
         state.CreateFPSDebugGUI();
         state.CreateDemoDebugGUI();
         state.CreatePhysicsDebugGUI();
@@ -128,6 +130,7 @@ internal class Demo11 : DemoBase
         emitter.GravityScale = 0;
         emitter.LinearDamping = 0.04f;
         emitter.Texture = fadedcircle;
+        emitter.DestroyOnNoParticles = true;
 
         entity.Add(emitter);
 
@@ -140,6 +143,7 @@ internal class Demo11 : DemoBase
         emitter2.GravityScale = 25;
         emitter2.LinearDamping = 0.02f;
         emitter2.Texture = smallPixel;
+        emitter2.DestroyOnNoParticles = true;
 
         entity.Add(emitter2);
 
